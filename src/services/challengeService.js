@@ -1,61 +1,35 @@
 import api from './api';
 
-// Get all challenges
-export const getAllChallenges = async (filters = {}) => {
-  try {
-    const response = await api.get('/challenges', { params: filters });
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+export const challengeService = {
+  // Get all challenges
+  getAllChallenges: async (params = {}) => {
+    const response = await api.get('/challenges', { params });
+    return response.data;
+  },
 
-// Get single challenge by ID
-export const getChallengeById = async (id) => {
-  try {
+  // Get single challenge
+  getChallengeById: async (id) => {
     const response = await api.get(`/challenges/${id}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+    return response.data;
+  },
 
-// Create new challenge
-export const createChallenge = async (challengeData) => {
-  try {
-    const response = await api.post('/challenges', challengeData);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+  // Create challenge
+  createChallenge: async (data) => {
+    const response = await api.post('/challenges', data);
+    return response.data;
+  },
 
-// Update challenge
-export const updateChallenge = async (id, challengeData) => {
-  try {
-    const response = await api.patch(`/challenges/${id}`, challengeData);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+  // Update challenge
+  updateChallenge: async (id, data) => {
+    const response = await api.put(`/challenges/${id}`, data);
+    return response.data;
+  },
 
-// Delete challenge
-export const deleteChallenge = async (id) => {
-  try {
+  // Delete challenge
+  deleteChallenge: async (id) => {
     const response = await api.delete(`/challenges/${id}`);
-    return response;
-  } catch (error) {
-    throw error;
+    return response.data;
   }
 };
 
-// Join challenge
-export const joinChallenge = async (id, userId) => {
-  try {
-    const response = await api.post(`/challenges/join/${id}`, { userId });
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+export default challengeService;

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import challengeService from '../services/challengeService';
 import userChallengeService from '../services/userChallengeService';
+import ShareButtons from '../components/common/ShareButtons';
+import { generateShareText } from '../utils/socialShare';
 import toast from 'react-hot-toast';
 import { FaUsers, FaClock, FaTrophy, FaCalendarAlt } from 'react-icons/fa';
 
@@ -65,6 +67,9 @@ const ChallengeDetails = () => {
       </div>
     );
   }
+
+  const challengeUrl = `${window.location.origin}/challenges/${id}`;
+  const shareText = generateShareText.challenge(challenge.title);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

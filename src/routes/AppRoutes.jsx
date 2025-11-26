@@ -6,6 +6,8 @@ import Register from '../pages/Register';
 import Challenges from '../pages/Challenges';
 import ChallengeDetails from '../pages/ChallengeDetails';
 import MyActivities from '../pages/MyActivities';
+import Leaderboard from '../pages/Leaderboard';
+import Profile from '../pages/Profile';
 import NotFound from '../pages/NotFound';
 
 const AppRoutes = () => {
@@ -17,6 +19,7 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/challenges" element={<Challenges />} />
       <Route path="/challenges/:id" element={<ChallengeDetails />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
 
       {/* Protected Routes */}
       <Route
@@ -24,6 +27,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <MyActivities />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         }
       />

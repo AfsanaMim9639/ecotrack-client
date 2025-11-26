@@ -35,10 +35,18 @@ const Navbar = () => {
             <Link to="/challenges" className="text-gray-700 hover:text-green-600 transition">
               Challenges
             </Link>
+            <Link to="/leaderboard" className="text-gray-700 hover:text-green-600 transition">
+              Leaderboard
+            </Link>
             {currentUser && (
-              <Link to="/my-activities" className="text-gray-700 hover:text-green-600 transition">
-                My Activities
-              </Link>
+              <>
+                <Link to="/my-activities" className="text-gray-700 hover:text-green-600 transition">
+                  My Activities
+                </Link>
+                <Link to="/profile" className="text-gray-700 hover:text-green-600 transition">
+                  Profile
+                </Link>
+              </>
             )}
           </div>
 

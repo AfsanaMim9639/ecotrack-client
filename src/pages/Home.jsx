@@ -2,15 +2,20 @@ import { useEffect, useState } from 'react';
 import HeroBanner from '../components/home/HeroBanner';
 import api from '../services/api';
 import { Link } from 'react-router-dom';
-import { FaLeaf, FaUsers, FaTrophy, FaCalendarAlt } from 'react-icons/fa';
+import { FaLeaf, FaUsers, FaTrophy, FaCalendarAlt, FaHeart, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 
 const Home = () => {
   const [stats, setStats] = useState(null);
   const [challenges, setChallenges] = useState([]);
+  const [tips, setTips] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchStats();
     fetchChallenges();
+    fetchTips();
+    fetchEvents();
   }, []);
 
   const fetchStats = async () => {
@@ -28,6 +33,26 @@ const Home = () => {
       setChallenges(response.data.data);
     } catch (error) {
       console.error('Error fetching challenges:', error);
+    }
+  };
+
+  const fetchTips = async () => {
+    try {
+      const response = await api.get('/tips?featured=true&limit=6');
+      setTips(response.data.data);
+    } catch (error) {
+      console.error('Error fetching tips:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get('/events/upcoming?limit=6');
+      setEvents(response.data.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
     }
   };
 
@@ -83,6 +108,58 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Green Living Tips Section */}
+      <div className="bg-gradient-to-br from-green-50 to-blue-50 py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              💡 Green Living Tips
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Simple daily actions to make a big environmental impact
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tips.map((tip) => (
+                <TipCard key={tip._id} tip={tip} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Upcoming Events Section */}
+      <div className="bg-white py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              📅 Upcoming Events
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Join community events and make a difference together
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {events.map((event) => (
+                <EventCard key={event._id} event={event} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Why Go Green Section */}
       <div className="bg-green-50 py-16">
         <div className="max-w-6xl mx-auto px-6">
@@ -133,6 +210,144 @@ const ChallengePreview = ({ challenge }) => (
     </div>
   </Link>
 );
+
+const TipCard = ({ tip }) => {
+  const getImpactColor = (impact) => {
+    const colors = {
+      Low: 'text-yellow-600 bg-yellow-50',
+      Medium: 'text-orange-600 bg-orange-50',
+      High: 'text-green-600 bg-green-50'
+    };
+    return colors[impact] || 'text-gray-600 bg-gray-50';
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer group">
+      {/* Icon & Category */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-4xl">{tip.icon || '💡'}</span>
+        <span className="text-xs font-semibold text-gray-500 uppercase">
+          {tip.category}
+        </span>
+      </div>
+
+      {/* Title */}
+      <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">
+        {tip.title}
+      </h3>
+
+      {/* Description */}
+      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+        {tip.description}
+      </p>
+
+      {/* Impact Badge & Likes */}
+      <div className="flex items-center justify-between">
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getImpactColor(tip.impactLevel)}`}>
+          {tip.impactLevel} Impact
+        </span>
+        
+        <div className="flex items-center gap-2 text-gray-500">
+          <FaHeart className="w-4 h-4" />
+          <span className="text-sm">{tip.likes || 0}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EventCard = ({ event }) => {
+  const getLocationIcon = (type) => {
+    const icons = {
+      Online: '💻',
+      Physical: '📍',
+      Hybrid: '🌐'
+    };
+    return icons[type] || '📍';
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer">
+      {/* Event Image */}
+      <div className="relative h-48 bg-gradient-to-br from-green-400 to-blue-500 overflow-hidden">
+        {event.imageUrl ? (
+          <img 
+            src={event.imageUrl}
+            alt={event.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/400x300?text=Event';
+            }}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <span className="text-6xl">🌱</span>
+          </div>
+        )}
+        
+        {/* Featured Badge */}
+        {event.featured && (
+          <div className="absolute top-3 left-3">
+            <span className="px-3 py-1 bg-yellow-400 text-yellow-900 rounded-full text-xs font-bold">
+              ⭐ Featured
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Event Details */}
+      <div className="p-5">
+        {/* Category */}
+        <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold mb-3">
+          {event.category}
+        </span>
+
+        {/* Title */}
+        <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
+          {event.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+          {event.description}
+        </p>
+
+        {/* Date & Time */}
+        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+          <FaClock className="w-4 h-4" />
+          <span>{new Date(event.eventDate).toLocaleDateString()}</span>
+          <span className="mx-1">•</span>
+          <span>{event.eventTime}</span>
+        </div>
+
+        {/* Location */}
+        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+          <FaMapMarkerAlt className="w-4 h-4" />
+          <span>{getLocationIcon(event.location.type)} {event.location.type}</span>
+          {event.location.city && (
+            <>
+              <span className="mx-1">•</span>
+              <span>{event.location.city}</span>
+            </>
+          )}
+        </div>
+
+        {/* Registration Info */}
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div className="text-sm">
+            <span className="text-gray-600">Registered:</span>
+            <span className="font-semibold text-gray-800 ml-1">
+              {event.registeredCount}/{event.capacity}
+            </span>
+          </div>
+          <div className="text-sm font-semibold text-green-600">
+            +{event.points} pts
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const FeatureCard = ({ title, description, icon }) => (
   <div className="text-center">

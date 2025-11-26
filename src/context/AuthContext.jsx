@@ -8,6 +8,7 @@ import {
   signInWithPopup
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
+import userService from '../services/userService';
 
 const AuthContext = createContext({});
 
@@ -17,20 +18,41 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Create user profile in database
+  const createUserProfile = async (user) => {
+    try {
+      await userService.getOrCreateProfile({
+        userId: user.uid,
+        email: user.email,
+        displayName: user.displayName || user.email.split('@')[0],
+        photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=22c55e&color=fff`
+      });
+      console.log('✅ User profile created/updated');
+    } catch (error) {
+      console.error('Error creating user profile:', error);
+    }
+  };
+
   // Register with email/password
-  const register = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  const register = async (email, password) => {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    await createUserProfile(result.user);
+    return result;
   };
 
   // Login with email/password
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const login = async (email, password) => {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    await createUserProfile(result.user);
+    return result;
   };
 
   // Login with Google
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    await createUserProfile(result.user);
+    return result;
   };
 
   // Logout
@@ -47,7 +69,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Create/update user profile when auth state changes
+        await createUserProfile(user);
+      }
       setCurrentUser(user);
       setLoading(false);
     });

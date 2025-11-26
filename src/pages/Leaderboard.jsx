@@ -38,6 +38,10 @@ const Leaderboard = () => {
       setMyRank(response.data);
     } catch (error) {
       console.error('Error fetching rank:', error);
+      // Don't show error if user profile doesn't exist yet
+      if (error.status !== 404) {
+        toast.error('Failed to load your rank');
+      }
     }
   };
 

@@ -26,6 +26,16 @@ const LeaderboardTable = ({ leaderboard, currentUserId }) => {
     return colors[rank] || colors['Beginner'];
   };
 
+  // Handle empty leaderboard
+  if (!leaderboard || leaderboard.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-12 text-center">
+        <p className="text-gray-500 text-lg">No users on the leaderboard yet.</p>
+        <p className="text-gray-400 text-sm mt-2">Be the first to join challenges and earn points!</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="overflow-x-auto">
@@ -84,6 +94,9 @@ const LeaderboardTable = ({ leaderboard, currentUserId }) => {
                       src={user.photoURL}
                       alt={user.displayName}
                       className="h-10 w-10 rounded-full"
+                      onError={(e) => {
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName)}&background=22c55e&color=fff`;
+                      }}
                     />
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">

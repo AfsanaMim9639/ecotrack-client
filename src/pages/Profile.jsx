@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import userService from '../services/userService';
-//import { BadgeGrid } from '../components/profile/BadgeDisplay';
+import { BadgeGrid } from '../components/profile/BadgeDisplay';
 import ShareButtons from '../components/common/ShareButtons';
 import { generateShareText } from '../utils/socialShare';
 import toast from 'react-hot-toast';
@@ -26,7 +26,23 @@ const Profile = () => {
       setProfile(response.data);
     } catch (error) {
       console.error('Error fetching profile:', error);
-      toast.error('Failed to load profile');
+      // If profile doesn't exist, create it
+      if (error.status === 404 && currentUser) {
+        try {
+          const createResponse = await userService.getOrCreateProfile({
+            userId: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName || currentUser.email.split('@')[0],
+            photoURL: currentUser.photoURL
+          });
+          setProfile(createResponse.data);
+        } catch (createError) {
+          console.error('Error creating profile:', createError);
+          toast.error('Failed to create profile');
+        }
+      } else {
+        toast.error('Failed to load profile');
+      }
     }
   };
 
@@ -36,6 +52,19 @@ const Profile = () => {
       setBadgesData(response.data);
     } catch (error) {
       console.error('Error fetching badges:', error);
+      // Set empty badge data if user doesn't exist
+      if (error.status === 404) {
+        setBadgesData({
+          earnedBadges: [],
+          allPossibleBadges: [],
+          stats: {
+            totalPoints: 0,
+            totalChallengesCompleted: 0,
+            totalChallengesJoined: 0,
+            currentStreak: 0
+          }
+        });
+      }
     } finally {
       setLoading(false);
     }

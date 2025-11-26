@@ -19,13 +19,14 @@ const ShareButtons = ({ text, url, title }) => {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap">
       <span className="text-sm text-gray-600 font-medium">Share:</span>
       
       <button
         onClick={() => shareOnTwitter(text, url)}
         className="p-2 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition"
         title="Share on Twitter"
+        type="button"
       >
         <FaTwitter size={18} />
       </button>
@@ -34,6 +35,7 @@ const ShareButtons = ({ text, url, title }) => {
         onClick={() => shareOnFacebook(url)}
         className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
         title="Share on Facebook"
+        type="button"
       >
         <FaFacebook size={18} />
       </button>
@@ -42,6 +44,7 @@ const ShareButtons = ({ text, url, title }) => {
         onClick={() => shareOnLinkedIn(title, url)}
         className="p-2 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition"
         title="Share on LinkedIn"
+        type="button"
       >
         <FaLinkedin size={18} />
       </button>
@@ -50,6 +53,7 @@ const ShareButtons = ({ text, url, title }) => {
         onClick={() => shareOnWhatsApp(text, url)}
         className="p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition"
         title="Share on WhatsApp"
+        type="button"
       >
         <FaWhatsapp size={18} />
       </button>
@@ -58,6 +62,7 @@ const ShareButtons = ({ text, url, title }) => {
         onClick={handleCopyLink}
         className="p-2 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100 transition"
         title="Copy link"
+        type="button"
       >
         <FaLink size={18} />
       </button>

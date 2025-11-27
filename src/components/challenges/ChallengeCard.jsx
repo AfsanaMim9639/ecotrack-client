@@ -34,16 +34,31 @@ const ChallengeCard = ({ challenge, currentUser }) => {
       return;
     }
 
+    // Validate challenge data
+    if (!challenge || !challenge._id) {
+      toast.error('Invalid challenge data');
+      return;
+    }
+
     setIsJoining(true);
 
     try {
-      // Join challenge API call
-      await api.post('/user-challenges/join', {
+      console.log('Joining challenge with data:', {
         userId: currentUser.uid,
         userEmail: currentUser.email,
         userName: currentUser.displayName || currentUser.email.split('@')[0],
         challengeId: challenge._id
       });
+
+      // Join challenge API call
+      const response = await api.post('/user-challenges/join', {
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        userName: currentUser.displayName || currentUser.email.split('@')[0],
+        challengeId: challenge._id
+      });
+
+      console.log('Join response:', response.data);
 
       toast.success('🎉 Successfully joined the challenge!');
       
@@ -54,11 +69,26 @@ const ChallengeCard = ({ challenge, currentUser }) => {
 
     } catch (error) {
       console.error('Error joining challenge:', error);
+      console.error('Error response:', error.response?.data);
       
-      if (error.response?.status === 400) {
-        toast.error(error.response.data.message || 'You have already joined this challenge');
+      // Detailed error handling
+      if (error.response) {
+        // Server responded with error
+        const errorMessage = error.response.data?.message || 'Failed to join challenge';
+        
+        if (error.response.status === 400) {
+          toast.error(errorMessage);
+        } else if (error.response.status === 404) {
+          toast.error('Challenge not found');
+        } else {
+          toast.error('Server error. Please try again.');
+        }
+      } else if (error.request) {
+        // Request made but no response
+        toast.error('Network error. Please check your connection.');
       } else {
-        toast.error('Failed to join challenge. Please try again.');
+        // Other errors
+        toast.error('An unexpected error occurred.');
       }
     } finally {
       setIsJoining(false);

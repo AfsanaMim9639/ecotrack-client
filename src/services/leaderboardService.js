@@ -1,24 +1,39 @@
 import api from './api';
 
-export const leaderboardService = {
-  // Get leaderboard
+const leaderboardService = {
+  // Get leaderboard with filters
   getLeaderboard: async (type = 'points', limit = 50) => {
-    const response = await api.get('/leaderboard', {
-      params: { type, limit }
-    });
-    return response.data;
+    try {
+      const response = await api.get('/leaderboard', {
+        params: { type, limit }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Leaderboard service error:', error);
+      throw error;
+    }
   },
 
-  // Get user's rank
+  // Get current user's rank
   getMyRank: async () => {
-    const response = await api.get('/leaderboard/my-rank');
-    return response.data;
+    try {
+      const response = await api.get('/leaderboard/my-rank');
+      return response.data;
+    } catch (error) {
+      console.error('My rank service error:', error);
+      throw error;
+    }
   },
 
   // Get top performers
   getTopPerformers: async () => {
-    const response = await api.get('/leaderboard/top-performers');
-    return response.data;
+    try {
+      const response = await api.get('/leaderboard/top-performers');
+      return response.data;
+    } catch (error) {
+      console.error('Top performers service error:', error);
+      throw error;
+    }
   }
 };
 

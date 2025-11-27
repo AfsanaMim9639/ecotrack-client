@@ -2,21 +2,15 @@ import api from './api';
 
 export const userChallengeService = {
   // Join a challenge
-  joinChallenge: async (data) => {
-    const response = await api.post('/user-challenges/join', data);
+  joinChallenge: async (challengeId) => {
+    const response = await api.post('/user-challenges/join', { challengeId });
     return response.data;
   },
 
-  // Get user's challenges
-  getUserChallenges: async (userId, status = null) => {
+  // Get user's challenges (uses query parameter, not path parameter)
+  getUserChallenges: async (status) => {
     const params = status ? { status } : {};
-    const response = await api.get(`/user-challenges/user/${userId}`, { params });
-    return response.data;
-  },
-
-  // Get user statistics
-  getUserStats: async (userId) => {
-    const response = await api.get(`/user-challenges/user/${userId}/stats`);
+    const response = await api.get('/user-challenges', { params });
     return response.data;
   },
 
@@ -26,17 +20,9 @@ export const userChallengeService = {
     return response.data;
   },
 
-  // Update progress percentage
-  updateProgress: async (id, progressPercentage) => {
-    const response = await api.put(`/user-challenges/${id}/progress`, {
-      progressPercentage
-    });
-    return response.data;
-  },
-
-  // Add progress update
-  addProgressUpdate: async (id, data) => {
-    const response = await api.post(`/user-challenges/${id}/updates`, data);
+  // Update progress
+  updateProgress: async (id, data) => {
+    const response = await api.post(`/user-challenges/${id}/progress`, data);
     return response.data;
   },
 

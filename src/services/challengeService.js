@@ -19,9 +19,9 @@ export const challengeService = {
     return response.data;
   },
 
-  // Update challenge
+  // Update challenge (PATCH)
   updateChallenge: async (id, data) => {
-    const response = await api.put(`/challenges/${id}`, data);
+    const response = await api.patch(`/challenges/${id}`, data);
     return response.data;
   },
 

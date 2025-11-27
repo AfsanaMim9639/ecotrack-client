@@ -6,7 +6,7 @@ import userChallengeService from '../services/userChallengeService';
 import ShareButtons from '../components/common/ShareButtons';
 import { generateShareText } from '../utils/socialShare';
 import toast from 'react-hot-toast';
-import { FaUsers, FaClock, FaTrophy, FaCalendarAlt } from 'react-icons/fa';
+import { FaUsers, FaClock, FaTrophy, FaCalendarAlt, FaCheckCircle } from 'react-icons/fa';
 
 const ChallengeDetails = () => {
   const { id } = useParams();
@@ -15,10 +15,17 @@ const ChallengeDetails = () => {
   const [challenge, setChallenge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
+  const [alreadyJoined, setAlreadyJoined] = useState(false);
+  const [checkingJoinStatus, setCheckingJoinStatus] = useState(true);
 
   useEffect(() => {
     fetchChallenge();
-  }, [id]);
+    if (currentUser) {
+      checkIfAlreadyJoined();
+    } else {
+      setCheckingJoinStatus(false);
+    }
+  }, [id, currentUser]);
 
   const fetchChallenge = async () => {
     try {
@@ -32,6 +39,18 @@ const ChallengeDetails = () => {
     }
   };
 
+  const checkIfAlreadyJoined = async () => {
+    try {
+      const response = await userChallengeService.getUserChallenges('active,completed');
+      const joined = response.data.some(uc => uc.challengeId._id === id || uc.challengeId === id);
+      setAlreadyJoined(joined);
+    } catch (error) {
+      console.error('Error checking join status:', error);
+    } finally {
+      setCheckingJoinStatus(false);
+    }
+  };
+
   const handleJoin = async () => {
     if (!currentUser) {
       toast.error('Please login to join challenges');
@@ -39,14 +58,32 @@ const ChallengeDetails = () => {
       return;
     }
 
+    if (alreadyJoined) {
+      toast.error('You have already joined this challenge');
+      navigate('/my-activities');
+      return;
+    }
+
     setJoining(true);
     try {
       await userChallengeService.joinChallenge(id);
       toast.success('Successfully joined challenge! 🎉');
-      navigate('/my-activities');
+      setAlreadyJoined(true);
+      setTimeout(() => {
+        navigate('/my-activities');
+      }, 1000);
     } catch (error) {
       console.error('Error joining challenge:', error);
-      toast.error(error.message || 'Failed to join challenge');
+      
+      if (error.message && error.message.includes('already joined')) {
+        toast.error('You have already joined this challenge');
+        setAlreadyJoined(true);
+        setTimeout(() => {
+          navigate('/my-activities');
+        }, 1500);
+      } else {
+        toast.error(error.message || 'Failed to join challenge');
+      }
     } finally {
       setJoining(false);
     }
@@ -71,37 +108,86 @@ const ChallengeDetails = () => {
   const challengeUrl = `${window.location.origin}/challenges/${id}`;
   const shareText = generateShareText.challenge(challenge.title);
 
+  const difficultyColors = {
+    Easy: 'bg-green-100 text-green-800',
+    Medium: 'bg-yellow-100 text-yellow-800',
+    Hard: 'bg-red-100 text-red-800'
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-6">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/challenges')}
+          className="mb-6 text-green-600 hover:text-green-700 font-semibold flex items-center gap-2"
+        >
+          ← Back to Challenges
+        </button>
+
         {/* Challenge Image */}
         <div className="rounded-lg overflow-hidden shadow-lg mb-6">
           <img
             src={challenge.imageUrl}
             alt={challenge.title}
             className="w-full h-96 object-cover"
+            onError={(e) => {
+              e.target.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400';
+            }}
           />
         </div>
 
         {/* Challenge Info */}
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="mb-6">
-            <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
-              {challenge.category}
-            </span>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                {challenge.category}
+              </span>
+              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${difficultyColors[challenge.difficulty]}`}>
+                {challenge.difficulty}
+              </span>
+              {challenge.status && (
+                <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">
+                  {challenge.status}
+                </span>
+              )}
+            </div>
+            
             <h1 className="text-4xl font-bold text-gray-800 mb-4">
               {challenge.title}
             </h1>
-            <p className="text-gray-600 text-lg">
+            
+            <p className="text-gray-600 text-lg mb-4">
               {challenge.description}
             </p>
+
+            {challenge.target && (
+              <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
+                <p className="text-sm text-gray-700">
+                  <strong className="text-green-700">Target:</strong> {challenge.target}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Share Section */}
+          <div className="mb-6 pb-6 border-b">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              Share This Challenge
+            </h3>
+            <ShareButtons
+              text={shareText}
+              url={challengeUrl}
+              title={challenge.title}
+            />
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-blue-50 p-4 rounded-lg text-center">
               <FaUsers className="text-2xl text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-800">{challenge.participants}</div>
+              <div className="text-2xl font-bold text-gray-800">{challenge.participants || 0}</div>
               <div className="text-sm text-gray-600">Participants</div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg text-center">
@@ -111,7 +197,7 @@ const ChallengeDetails = () => {
             </div>
             <div className="bg-yellow-50 p-4 rounded-lg text-center">
               <FaTrophy className="text-2xl text-yellow-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-800">{challenge.points}</div>
+              <div className="text-2xl font-bold text-gray-800">{challenge.points || 100}</div>
               <div className="text-sm text-gray-600">Points</div>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg text-center">
@@ -122,13 +208,67 @@ const ChallengeDetails = () => {
           </div>
 
           {/* Join Button */}
-          <button
-            onClick={handleJoin}
-            disabled={joining}
-            className="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50 transition"
-          >
-            {joining ? 'Joining...' : 'Join This Challenge 🌱'}
-          </button>
+          <div className="border-t pt-6">
+            {!currentUser ? (
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">Please login to join this challenge</p>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                >
+                  Login to Join
+                </button>
+              </div>
+            ) : checkingJoinStatus ? (
+              <div className="text-center py-4">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              </div>
+            ) : alreadyJoined ? (
+              <div className="text-center">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <FaCheckCircle className="text-4xl text-green-600 mx-auto mb-3" />
+                  <p className="text-lg font-semibold text-green-800 mb-2">
+                    You've already joined this challenge!
+                  </p>
+                  <p className="text-gray-600 mb-4">
+                    Continue tracking your progress in My Activities
+                  </p>
+                  <button
+                    onClick={() => navigate('/my-activities')}
+                    className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                  >
+                    View My Activities
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={handleJoin}
+                disabled={joining || challenge.status === 'Completed'}
+                className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
+                  challenge.status === 'Completed'
+                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    : joining
+                    ? 'bg-green-400 text-white cursor-wait'
+                    : 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
+                }`}
+              >
+                {joining ? (
+                  <span className="flex items-center justify-center gap-3">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Joining...
+                  </span>
+                ) : challenge.status === 'Completed' ? (
+                  'Challenge Completed'
+                ) : (
+                  'Join This Challenge 🌱'
+                )}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -6,10 +6,10 @@ import toast from 'react-hot-toast';
 const Challenges = () => {
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     category: '',
-    difficulty: '',
-    status: 'Active'
+    search: ''
   });
 
   useEffect(() => {
@@ -18,19 +18,39 @@ const Challenges = () => {
 
   const fetchChallenges = async () => {
     setLoading(true);
+    setError(null);
+    
+    console.log('🔄 Fetching challenges with filters:', filters);
+    console.log('🌐 API Base URL:', import.meta.env.VITE_API_BASE_URL);
+    
     try {
       const response = await challengeService.getAllChallenges(filters);
+      console.log('✅ Challenges received:', response.data.length);
       setChallenges(response.data);
     } catch (error) {
-      console.error('Error fetching challenges:', error);
-      toast.error('Failed to load challenges');
+      console.error('❌ Error fetching challenges:', error);
+      
+      // Detailed error message
+      let errorMessage = 'Failed to load challenges';
+      
+      if (error.isNetworkError) {
+        errorMessage = 'Cannot connect to server. Please check your internet connection.';
+      } else if (error.status === 404) {
+        errorMessage = 'API endpoint not found. Please check server configuration.';
+      } else if (error.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const categories = ['All', 'Energy', 'Water', 'Waste', 'Transportation', 'Food'];
-  const difficulties = ['All', 'Easy', 'Medium', 'Hard'];
+  const categories = ['All', 'Energy Conservation', 'Water Conservation', 'Waste Reduction', 'Sustainable Transport', 'Green Living', 'Food & Agriculture'];
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -39,9 +59,16 @@ const Challenges = () => {
           Explore Challenges 🌱
         </h1>
 
+        {/* Debug Info - Remove in production */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <p className="text-sm text-blue-800">
+            <strong>API URL:</strong> {import.meta.env.VITE_API_BASE_URL || 'Not Set'}
+          </p>
+        </div>
+
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Category Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -58,39 +85,35 @@ const Challenges = () => {
               </select>
             </div>
 
-            {/* Difficulty Filter */}
+            {/* Search Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Difficulty
+                Search
               </label>
-              <select
-                value={filters.difficulty}
-                onChange={(e) => setFilters({ ...filters, difficulty: e.target.value === 'All' ? '' : e.target.value })}
+              <input
+                type="text"
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                placeholder="Search challenges..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-              >
-                {difficulties.map((diff) => (
-                  <option key={diff} value={diff}>{diff}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
-              <select
-                value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-              >
-                <option value="Active">Active</option>
-                <option value="Upcoming">Upcoming</option>
-                <option value="Completed">Completed</option>
-              </select>
+              />
             </div>
           </div>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+            <h3 className="text-red-800 font-bold mb-2">⚠️ Error Loading Challenges</h3>
+            <p className="text-red-700">{error}</p>
+            <button
+              onClick={fetchChallenges}
+              className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
 
         {/* Challenge Grid */}
         {loading ? (
@@ -105,8 +128,9 @@ const Challenges = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white rounded-lg shadow">
             <p className="text-gray-600 text-lg">No challenges found</p>
+            <p className="text-gray-500 mt-2">Try adjusting your filters</p>
           </div>
         )}
       </div>

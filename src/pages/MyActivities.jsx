@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import userChallengeService from '../services/userChallengeService';
 import toast from 'react-hot-toast';
-import { FaTrophy, FaClock, FaCheckCircle } from 'react-icons/fa';
+import { FaClock, FaCheckCircle, FaCalendarAlt } from 'react-icons/fa';
 
 const MyActivities = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('active');
+  const [filter, setFilter] = useState('Not Started,Ongoing');
 
   useEffect(() => {
     fetchActivities();
@@ -15,10 +15,11 @@ const MyActivities = () => {
   const fetchActivities = async () => {
     setLoading(true);
     try {
+      // Pass status as query parameter
       const response = await userChallengeService.getUserChallenges(filter);
       setActivities(response.data);
     } catch (error) {
-      console.error('Error fetching activities:', error);
+      console.error('❌ Error fetching activities:', error);
       toast.error('Failed to load activities');
     } finally {
       setLoading(false);
@@ -26,11 +27,20 @@ const MyActivities = () => {
   };
 
   const handleUpdateProgress = async (activityId) => {
+    // Prompt user for progress
+    const progressInput = prompt('Enter progress percentage (0-100):');
+    
+    if (progressInput === null) return; // User cancelled
+    
+    const progress = parseInt(progressInput);
+    
+    if (isNaN(progress) || progress < 0 || progress > 100) {
+      toast.error('Please enter a valid number between 0 and 100');
+      return;
+    }
+    
     try {
-      await userChallengeService.updateProgress(activityId, {
-        status: 'completed',
-        note: 'Daily progress updated'
-      });
+      await userChallengeService.updateProgress(activityId, { progress });
       toast.success('Progress updated! 🎉');
       fetchActivities();
     } catch (error) {
@@ -49,9 +59,9 @@ const MyActivities = () => {
         {/* Filter Tabs */}
         <div className="flex justify-center gap-4 mb-8">
           <button
-            onClick={() => setFilter('active')}
+            onClick={() => setFilter('Not Started,Ongoing')}
             className={`px-6 py-2 rounded-lg font-semibold transition ${
-              filter === 'active'
+              filter === 'Not Started,Ongoing'
                 ? 'bg-green-600 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
@@ -59,9 +69,9 @@ const MyActivities = () => {
             Active
           </button>
           <button
-            onClick={() => setFilter('completed')}
+            onClick={() => setFilter('Finished')}
             className={`px-6 py-2 rounded-lg font-semibold transition ${
-              filter === 'completed'
+              filter === 'Finished'
                 ? 'bg-green-600 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
@@ -89,9 +99,9 @@ const MyActivities = () => {
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow">
             <p className="text-gray-600 text-lg">
-              No {filter} activities found
+              No {filter === 'Finished' ? 'completed' : 'active'} activities found
             </p>
-            {filter === 'active' && (
+            {filter !== 'Finished' && (
               <p className="text-gray-500 mt-2">
                 Join a challenge to get started!
               </p>
@@ -106,12 +116,25 @@ const MyActivities = () => {
 const ActivityCard = ({ activity, onUpdate }) => {
   const challenge = activity.challengeId;
   
+  // Status colors
+  const statusColors = {
+    'Not Started': 'bg-gray-100 text-gray-800',
+    'Ongoing': 'bg-blue-100 text-blue-800',
+    'Finished': 'bg-green-100 text-green-800'
+  };
+  
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-xl font-bold text-gray-800 mb-2">
-        {challenge?.title}
-      </h3>
-      <p className="text-gray-600 text-sm mb-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-xl font-bold text-gray-800 flex-1 line-clamp-1">
+          {challenge?.title}
+        </h3>
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[activity.status]} ml-2`}>
+          {activity.status}
+        </span>
+      </div>
+      
+      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
         {challenge?.description}
       </p>
 
@@ -119,12 +142,12 @@ const ActivityCard = ({ activity, onUpdate }) => {
       <div className="mb-4">
         <div className="flex justify-between text-sm text-gray-600 mb-2">
           <span>Progress</span>
-          <span>{activity.progressPercentage}%</span>
+          <span>{activity.progress}%</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
             className="bg-green-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${activity.progressPercentage}%` }}
+            style={{ width: `${activity.progress}%` }}
           ></div>
         </div>
       </div>
@@ -136,13 +159,15 @@ const ActivityCard = ({ activity, onUpdate }) => {
           <span>{challenge?.duration} days</span>
         </div>
         <div className="flex items-center gap-1">
-          <FaTrophy className="text-yellow-600" />
-          <span>{activity.pointsEarned || challenge?.points} pts</span>
+          <FaCalendarAlt className="text-purple-600" />
+          <span className="text-xs">
+            Joined: {new Date(activity.joinDate).toLocaleDateString()}
+          </span>
         </div>
       </div>
 
       {/* Action Button */}
-      {activity.status === 'active' && (
+      {activity.status !== 'Finished' && (
         <button
           onClick={() => onUpdate(activity._id)}
           className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
@@ -152,7 +177,7 @@ const ActivityCard = ({ activity, onUpdate }) => {
         </button>
       )}
       
-      {activity.status === 'completed' && (
+      {activity.status === 'Finished' && (
         <div className="text-center py-2 bg-green-50 text-green-700 font-semibold rounded-lg">
           ✅ Completed
         </div>

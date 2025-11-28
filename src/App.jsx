@@ -11,10 +11,11 @@ function App() {
       <AuthProvider>
         <div className="min-h-screen bg-gray-50 flex flex-col">
           <Navbar />
-          <main className="flex-grow">  {/* 👈 Main content wrapper */}
+          <main className="flex-grow">  
             <AppRoutes />
+            
           </main>
-          <Footer />  {/* 👈 Footer add করুন */}
+          <Footer />  
           <Toaster
             position="top-right"
             toastOptions={{

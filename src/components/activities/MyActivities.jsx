@@ -7,7 +7,7 @@ const MyActivities = ({ currentUser }) => {
   const [challenges, setChallenges] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, Active, Completed
+  const [filter, setFilter] = useState('all'); 
 
   useEffect(() => {
     if (currentUser) {

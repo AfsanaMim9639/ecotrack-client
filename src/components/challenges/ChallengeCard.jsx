@@ -1,18 +1,15 @@
-// ============================================
-// FILE: src/components/challenges/ChallengeCard.jsx
-// Fixed version with proper auth check
-// ============================================
+
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';  // ✅ Import useAuth
+import { useAuth } from '../../context/AuthContext';  
 import { FaUsers, FaClock, FaTrophy } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';
 
-const ChallengeCard = ({ challenge }) => {  // ✅ Remove currentUser prop, use hook instead
+const ChallengeCard = ({ challenge }) => {  
   const navigate = useNavigate();
-  const { currentUser } = useAuth();  // ✅ Get currentUser from context
+  const { currentUser } = useAuth();  
   const [isJoining, setIsJoining] = useState(false);
 
   const difficultyColors = {
@@ -64,13 +61,12 @@ const ChallengeCard = ({ challenge }) => {  // ✅ Remove currentUser prop, use 
         challengeId: challenge._id
       };
 
-      console.log('📤 Joining challenge with data:', joinData);
+      
 
       // Join challenge API call
       const response = await api.post('/user-challenges/join', joinData);
 
-      console.log('✅ Join response:', response.data);
-
+      
       if (response.data.success) {
         toast.success('🎉 Successfully joined the challenge!');
         

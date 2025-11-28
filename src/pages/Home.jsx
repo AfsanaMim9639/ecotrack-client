@@ -4,6 +4,7 @@ import HeroBanner from '../components/home/HeroBanner';
 import api from '../services/api';
 import { Link } from 'react-router-dom';
 import { FaLeaf, FaUsers, FaTrophy, FaCalendarAlt, FaHeart, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+//import Footer from '../components/home/Footer';
 
 const Home = () => {
   const [stats, setStats] = useState(null);
@@ -40,18 +41,16 @@ const Home = () => {
 
   const fetchTips = async () => {
     try {
-      // ✅ Fixed: Remove featured filter, just get latest tips
-      console.log('🔍 Fetching tips...');
+      
       const response = await api.get('/tips?limit=6');
       
-      console.log('✅ Tips response:', response.data);
       
       if (response.data.success && response.data.data) {
         setTips(response.data.data);
-        console.log('📝 Tips set:', response.data.data.length);
+        
       } else {
         setTips([]);
-        console.log('⚠️ No tips data found');
+        
       }
     } catch (error) {
       console.error('❌ Error fetching tips:', error);
@@ -396,6 +395,8 @@ const FeatureCard = ({ title, description, icon }) => (
     <p className="text-gray-600">{description}</p>
   </div>
 );
+
+
 
 export default Home;
 

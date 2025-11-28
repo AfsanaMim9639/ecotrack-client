@@ -1,11 +1,18 @@
+// ============================================
+// FILE: src/components/challenges/ChallengeCard.jsx
+// Fixed version with proper auth check
+// ============================================
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';  // ✅ Import useAuth
 import { FaUsers, FaClock, FaTrophy } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';
 
-const ChallengeCard = ({ challenge, currentUser }) => {
+const ChallengeCard = ({ challenge }) => {  // ✅ Remove currentUser prop, use hook instead
   const navigate = useNavigate();
+  const { currentUser } = useAuth();  // ✅ Get currentUser from context
   const [isJoining, setIsJoining] = useState(false);
 
   const difficultyColors = {
@@ -15,11 +22,12 @@ const ChallengeCard = ({ challenge, currentUser }) => {
   };
 
   const categoryColors = {
-    Energy: 'bg-blue-500',
-    Water: 'bg-cyan-500',
-    Waste: 'bg-orange-500',
-    Transportation: 'bg-purple-500',
-    Food: 'bg-green-500',
+    'Energy Conservation': 'bg-blue-500',
+    'Water Conservation': 'bg-cyan-500',
+    'Waste Reduction': 'bg-orange-500',
+    'Sustainable Transport': 'bg-purple-500',
+    'Green Living': 'bg-green-500',
+    'Sustainable Living': 'bg-emerald-500',
     Other: 'bg-gray-500'
   };
 
@@ -27,15 +35,21 @@ const ChallengeCard = ({ challenge, currentUser }) => {
     e.preventDefault();
     e.stopPropagation();
 
+    // ✅ Debug log
+    console.log('🔍 Current User:', currentUser);
+    console.log('🔍 Challenge:', challenge);
+
     // Check if user is logged in
     if (!currentUser) {
+      console.log('❌ No user logged in');
       toast.error('Please login to join challenges');
-      navigate('/login');
+      navigate('/login', { state: { from: '/challenges' } });
       return;
     }
 
     // Validate challenge data
     if (!challenge || !challenge._id) {
+      console.log('❌ Invalid challenge data');
       toast.error('Invalid challenge data');
       return;
     }
@@ -43,52 +57,46 @@ const ChallengeCard = ({ challenge, currentUser }) => {
     setIsJoining(true);
 
     try {
-      console.log('Joining challenge with data:', {
+      const joinData = {
         userId: currentUser.uid,
         userEmail: currentUser.email,
-        userName: currentUser.displayName || currentUser.email.split('@')[0],
+        userName: currentUser.displayName || currentUser.email?.split('@')[0] || 'EcoWarrior',
         challengeId: challenge._id
-      });
+      };
+
+      console.log('📤 Joining challenge with data:', joinData);
 
       // Join challenge API call
-      const response = await api.post('/user-challenges/join', {
-        userId: currentUser.uid,
-        userEmail: currentUser.email,
-        userName: currentUser.displayName || currentUser.email.split('@')[0],
-        challengeId: challenge._id
-      });
+      const response = await api.post('/user-challenges/join', joinData);
 
-      console.log('Join response:', response.data);
+      console.log('✅ Join response:', response.data);
 
-      toast.success('🎉 Successfully joined the challenge!');
-      
-      // Navigate to My Activities page after a short delay
-      setTimeout(() => {
-        navigate('/my-activities');
-      }, 1000);
+      if (response.data.success) {
+        toast.success('🎉 Successfully joined the challenge!');
+        
+        // Navigate to My Activities page
+        setTimeout(() => {
+          navigate('/my-activities');
+        }, 1000);
+      } else {
+        toast.error(response.data.message || 'Failed to join challenge');
+      }
 
     } catch (error) {
-      console.error('Error joining challenge:', error);
-      console.error('Error response:', error.response?.data);
+      console.error('❌ Error joining challenge:', error);
+      console.error('❌ Error response:', error.response?.data);
       
       // Detailed error handling
-      if (error.response) {
-        // Server responded with error
-        const errorMessage = error.response.data?.message || 'Failed to join challenge';
-        
-        if (error.response.status === 400) {
-          toast.error(errorMessage);
-        } else if (error.response.status === 404) {
-          toast.error('Challenge not found');
-        } else {
-          toast.error('Server error. Please try again.');
-        }
-      } else if (error.request) {
-        // Request made but no response
-        toast.error('Network error. Please check your connection.');
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 400) {
+        toast.error('You may have already joined this challenge');
+      } else if (error.response?.status === 404) {
+        toast.error('Challenge not found');
+      } else if (error.message) {
+        toast.error(error.message);
       } else {
-        // Other errors
-        toast.error('An unexpected error occurred.');
+        toast.error('Failed to join challenge. Please try again.');
       }
     } finally {
       setIsJoining(false);
@@ -100,14 +108,16 @@ const ChallengeCard = ({ challenge, currentUser }) => {
       {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={challenge.imageUrl}
+          src={challenge.imageUrl || 'https://via.placeholder.com/400x300?text=Challenge'}
           alt={challenge.title}
           className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
             e.target.src = 'https://via.placeholder.com/400x300?text=Challenge';
           }}
         />
-        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-white text-sm font-semibold ${categoryColors[challenge.category] || categoryColors.Other}`}>
+        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-white text-sm font-semibold ${
+          categoryColors[challenge.category] || categoryColors.Other
+        }`}>
           {challenge.category}
         </div>
       </div>
@@ -129,21 +139,27 @@ const ChallengeCard = ({ challenge, currentUser }) => {
           </div>
           <div className="flex items-center gap-1">
             <FaClock className="text-blue-600" />
-            <span>{challenge.duration} days</span>
+            <span>{challenge.duration || 30} days</span>
           </div>
-          <div className="flex items-center gap-1">
-            <FaTrophy className="text-yellow-600" />
-            <span>{challenge.points} pts</span>
-          </div>
+          {challenge.points && (
+            <div className="flex items-center gap-1">
+              <FaTrophy className="text-yellow-600" />
+              <span>{challenge.points} pts</span>
+            </div>
+          )}
         </div>
 
         {/* Difficulty & Buttons */}
         <div className="flex items-center justify-between gap-2">
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[challenge.difficulty]}`}>
-            {challenge.difficulty}
-          </span>
+          {challenge.difficulty && (
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+              difficultyColors[challenge.difficulty] || difficultyColors.Easy
+            }`}>
+              {challenge.difficulty}
+            </span>
+          )}
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-auto">
             <Link
               to={`/challenges/${challenge._id}`}
               className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-700 transition"
@@ -153,11 +169,9 @@ const ChallengeCard = ({ challenge, currentUser }) => {
             
             <button
               onClick={handleJoinChallenge}
-              disabled={isJoining || challenge.status === 'Completed'}
+              disabled={isJoining}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                challenge.status === 'Completed'
-                  ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                  : isJoining
+                isJoining
                   ? 'bg-green-400 text-white cursor-wait'
                   : 'bg-green-600 text-white hover:bg-green-700'
               }`}
@@ -170,8 +184,6 @@ const ChallengeCard = ({ challenge, currentUser }) => {
                   </svg>
                   Joining...
                 </span>
-              ) : challenge.status === 'Completed' ? (
-                'Completed'
               ) : (
                 'Join'
               )}
@@ -179,8 +191,16 @@ const ChallengeCard = ({ challenge, currentUser }) => {
           </div>
         </div>
       </div>
+
+      {/* Debug Info (Remove after testing) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-yellow-50 border-t border-yellow-200 p-2 text-xs">
+          <span className="font-semibold">Debug:</span> User: {currentUser ? '✅ Logged In' : '❌ Not Logged In'}
+        </div>
+      )}
     </div>
   );
 };
 
 export default ChallengeCard;
+

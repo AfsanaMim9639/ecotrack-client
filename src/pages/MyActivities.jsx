@@ -138,13 +138,7 @@ const MyActivities = () => {
           </button>
         </div>
 
-        {/* Debug Info (Remove after testing) */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
-          <p className="text-sm text-blue-700">User ID: {currentUser.uid}</p>
-          <p className="text-sm text-blue-700">Filter: {filter}</p>
-          <p className="text-sm text-blue-700">Activities Count: {activities.length}</p>
-        </div>
+        
 
         {/* Activities List */}
         {loading ? (

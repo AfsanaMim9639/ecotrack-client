@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import HeroBanner from '../components/home/HeroBanner';
 import api from '../services/api';
@@ -30,18 +31,31 @@ const Home = () => {
   const fetchChallenges = async () => {
     try {
       const response = await api.get('/challenges?limit=6');
-      setChallenges(response.data.data);
+      setChallenges(response.data.data || []);
     } catch (error) {
       console.error('Error fetching challenges:', error);
+      setChallenges([]);
     }
   };
 
   const fetchTips = async () => {
     try {
-      const response = await api.get('/tips?featured=true&limit=6');
-      setTips(response.data.data);
+      // ✅ Fixed: Remove featured filter, just get latest tips
+      console.log('🔍 Fetching tips...');
+      const response = await api.get('/tips?limit=6');
+      
+      console.log('✅ Tips response:', response.data);
+      
+      if (response.data.success && response.data.data) {
+        setTips(response.data.data);
+        console.log('📝 Tips set:', response.data.data.length);
+      } else {
+        setTips([]);
+        console.log('⚠️ No tips data found');
+      }
     } catch (error) {
-      console.error('Error fetching tips:', error);
+      console.error('❌ Error fetching tips:', error);
+      setTips([]);
     } finally {
       setLoading(false);
     }
@@ -50,9 +64,10 @@ const Home = () => {
   const fetchEvents = async () => {
     try {
       const response = await api.get('/events/upcoming?limit=6');
-      setEvents(response.data.data);
+      setEvents(response.data.data || []);
     } catch (error) {
       console.error('Error fetching events:', error);
+      setEvents([]);
     }
   };
 
@@ -93,19 +108,27 @@ const Home = () => {
         <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
           Featured Challenges
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {challenges.map((challenge) => (
-            <ChallengePreview key={challenge._id} challenge={challenge} />
-          ))}
-        </div>
-        <div className="text-center">
-          <Link
-            to="/challenges"
-            className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
-          >
-            View All Challenges
-          </Link>
-        </div>
+        {challenges.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {challenges.map((challenge) => (
+                <ChallengePreview key={challenge._id} challenge={challenge} />
+              ))}
+            </div>
+            <div className="text-center">
+              <Link
+                to="/challenges"
+                className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+              >
+                View All Challenges
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            No challenges available
+          </div>
+        )}
       </div>
 
       {/* Green Living Tips Section */}
@@ -120,15 +143,26 @@ const Home = () => {
             </p>
           </div>
 
+          {/* Debug Info */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm">
+            <strong>Debug:</strong> Tips Count: {tips.length} | Loading: {loading ? 'Yes' : 'No'}
+          </div>
+
           {loading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              <p className="ml-4 text-gray-600">Loading tips...</p>
             </div>
-          ) : (
+          ) : tips.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {tips.map((tip) => (
-                <TipCard key={tip._id} tip={tip} />
+                <TipCard key={tip._id} tip={tip} />  
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-lg shadow">
+              <p className="text-gray-600 text-lg mb-2">No tips available yet</p>
+              <p className="text-gray-500 text-sm">Check back soon for eco-friendly tips!</p>
             </div>
           )}
         </div>
@@ -150,11 +184,15 @@ const Home = () => {
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
             </div>
-          ) : (
+          ) : events.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {events.map((event) => (
-                <EventCard key={event._id} event={event} />
+                <EventCard key={event._id} event={event} />  
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              No upcoming events
             </div>
           )}
         </div>
@@ -192,7 +230,7 @@ const Home = () => {
 const StatCard = ({ icon, value, label }) => (
   <div className="bg-white rounded-lg shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300">
     <div className="flex justify-center mb-3">{icon}</div>
-    <div className="text-3xl font-bold text-gray-800 mb-1">{value}</div>
+    <div className="text-3xl font-bold text-gray-800 mb-1">{value || 0}</div>
     <div className="text-sm text-gray-600">{label}</div>
   </div>
 );
@@ -206,7 +244,7 @@ const ChallengePreview = ({ challenge }) => (
     <p className="text-gray-600 text-sm mb-3 line-clamp-2">{challenge.description}</p>
     <div className="flex items-center justify-between text-sm">
       <span className="text-green-600 font-semibold">{challenge.duration} days</span>
-      <span className="text-yellow-600 font-semibold">{challenge.points} points</span>
+      <span className="text-yellow-600 font-semibold">{challenge.points || 0} points</span>
     </div>
   </Link>
 );
@@ -227,7 +265,7 @@ const TipCard = ({ tip }) => {
       <div className="flex items-center justify-between mb-4">
         <span className="text-4xl">{tip.icon || '💡'}</span>
         <span className="text-xs font-semibold text-gray-500 uppercase">
-          {tip.category}
+          {tip.category || 'General'}
         </span>
       </div>
 
@@ -236,20 +274,22 @@ const TipCard = ({ tip }) => {
         {tip.title}
       </h3>
 
-      {/* Description */}
+      {/* Description or Content */}
       <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-        {tip.description}
+        {tip.description || tip.content || 'No description available'}
       </p>
 
       {/* Impact Badge & Likes */}
       <div className="flex items-center justify-between">
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getImpactColor(tip.impactLevel)}`}>
-          {tip.impactLevel} Impact
-        </span>
+        {tip.impactLevel && (
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getImpactColor(tip.impactLevel)}`}>
+            {tip.impactLevel} Impact
+          </span>
+        )}
         
         <div className="flex items-center gap-2 text-gray-500">
           <FaHeart className="w-4 h-4" />
-          <span className="text-sm">{tip.likes || 0}</span>
+          <span className="text-sm">{tip.likes || tip.upvotes || 0}</span>
         </div>
       </div>
     </div>
@@ -285,7 +325,6 @@ const EventCard = ({ event }) => {
           </div>
         )}
         
-        {/* Featured Badge */}
         {event.featured && (
           <div className="absolute top-3 left-3">
             <span className="px-3 py-1 bg-yellow-400 text-yellow-900 rounded-full text-xs font-bold">
@@ -297,52 +336,53 @@ const EventCard = ({ event }) => {
 
       {/* Event Details */}
       <div className="p-5">
-        {/* Category */}
         <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold mb-3">
-          {event.category}
+          {event.category || 'Event'}
         </span>
 
-        {/* Title */}
         <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
           {event.title}
         </h3>
 
-        {/* Description */}
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
           {event.description}
         </p>
 
-        {/* Date & Time */}
         <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
           <FaClock className="w-4 h-4" />
-          <span>{new Date(event.eventDate).toLocaleDateString()}</span>
-          <span className="mx-1">•</span>
-          <span>{event.eventTime}</span>
-        </div>
-
-        {/* Location */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-          <FaMapMarkerAlt className="w-4 h-4" />
-          <span>{getLocationIcon(event.location.type)} {event.location.type}</span>
-          {event.location.city && (
+          <span>{new Date(event.eventDate || event.date).toLocaleDateString()}</span>
+          {event.eventTime && (
             <>
               <span className="mx-1">•</span>
-              <span>{event.location.city}</span>
+              <span>{event.eventTime}</span>
             </>
           )}
         </div>
 
-        {/* Registration Info */}
+        {event.location && (
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+            <FaMapMarkerAlt className="w-4 h-4" />
+            <span>
+              {typeof event.location === 'string' 
+                ? event.location 
+                : `${getLocationIcon(event.location.type)} ${event.location.type}`
+              }
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between pt-4 border-t">
           <div className="text-sm">
             <span className="text-gray-600">Registered:</span>
             <span className="font-semibold text-gray-800 ml-1">
-              {event.registeredCount}/{event.capacity}
+              {event.registeredCount || event.currentParticipants || 0}/{event.capacity || event.maxParticipants || 0}
             </span>
           </div>
-          <div className="text-sm font-semibold text-green-600">
-            +{event.points} pts
-          </div>
+          {event.points && (
+            <div className="text-sm font-semibold text-green-600">
+              +{event.points} pts
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -358,3 +398,5 @@ const FeatureCard = ({ title, description, icon }) => (
 );
 
 export default Home;
+
+

@@ -7,6 +7,9 @@ import { Link } from 'react-router-dom';
 import LiveStatistics from '../components/home/LiveStatistics';
 
 import { FaHeart,FaTree,FaWater,FaUsers, FaCalendarAlt, FaUser, FaTrophy, FaMapMarkerAlt,FaClock, FaLeaf, FaBolt, FaTint, FaRecycle, FaBicycle, FaSeedling, FaUtensils, FaGlobeAmericas, FaLightbulb } from 'react-icons/fa';
+import WhyGoGreenSection from './WhyGoGreenSection';
+import HowItWorksSection from '../components/home/HowItWorksSection';
+import UpcomingEventsSection from '../components/home/UpcomingEventsSection';
 
 
 
@@ -14,14 +17,14 @@ const Home = () => {
   
   const [challenges, setChallenges] = useState([]);
   const [tips, setTips] = useState([]);
-  const [events, setEvents] = useState([]);
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     
     fetchChallenges();
     fetchTips();
-    fetchEvents();
+    
   }, []);
 
   
@@ -57,15 +60,7 @@ const Home = () => {
     }
   };
 
-  const fetchEvents = async () => {
-    try {
-      const response = await api.get('/events/upcoming?limit=6');
-      setEvents(response.data.data || []);
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      setEvents([]);
-    }
-  };
+ 
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -200,7 +195,7 @@ const Home = () => {
       animation-delay: 4s;
     }
   `}</style>
-</div>
+    </div>
 
       
      {/* Green Living Tips Section */}
@@ -303,222 +298,13 @@ const Home = () => {
 </div>
 
 {/* Upcoming Events Section */}
-<div className="relative overflow-hidden py-20">
-  {/* Animated Forest Background */}
-  <div className="absolute inset-0">
-    {/* Background Image with Parallax Effect */}
-    <div 
-      className="absolute inset-0 bg-cover bg-center"
-      style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1519331379826-f10be5486c6f?q=80&w=2560&auto=format&fit=crop')`,
-        animation: 'slowZoom 30s ease-in-out infinite alternate'
-      }}
-    ></div>
-    
-    {/* Green Gradient Overlay */}
-    <div className="absolute inset-0 bg-gradient-to-br from-green-900/75 via-emerald-900/70 to-teal-900/75"></div>
-    
-    {/* Animated Floating Orbs - Green Theme */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute top-20 left-10 w-40 h-40 bg-green-400/20 rounded-full blur-3xl animate-float-diagonal"></div>
-      <div className="absolute bottom-32 right-20 w-48 h-48 bg-emerald-300/20 rounded-full blur-3xl animate-float-reverse animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/3 w-36 h-36 bg-teal-300/20 rounded-full blur-3xl animate-float-diagonal animation-delay-4000"></div>
-      <div className="absolute bottom-20 left-1/4 w-32 h-32 bg-lime-300/20 rounded-full blur-3xl animate-float-reverse animation-delay-3000"></div>
-    </div>
-
-    {/* Moving Gradient Waves - Green */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(45deg, transparent 30%, rgba(134, 239, 172, 0.3) 50%, transparent 70%)',
-          animation: 'wave 8s linear infinite',
-          backgroundSize: '200% 200%'
-        }}
-      ></div>
-    </div>
-
-    {/* Subtle Light Beams */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-15">
-      <div className="absolute top-0 left-1/4 w-32 h-full bg-gradient-to-b from-white/40 via-transparent to-transparent transform -skew-x-12 animate-beam-slow"></div>
-      <div className="absolute top-0 right-1/3 w-24 h-full bg-gradient-to-b from-white/30 via-transparent to-transparent transform skew-x-12 animate-beam-slow animation-delay-3000"></div>
-    </div>
-
-    {/* Twinkling Stars Effect */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-green-200 rounded-full animate-twinkle"></div>
-      <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-emerald-200 rounded-full animate-twinkle animation-delay-1000"></div>
-      <div className="absolute bottom-1/3 left-2/3 w-1 h-1 bg-teal-200 rounded-full animate-twinkle animation-delay-2000"></div>
-      <div className="absolute top-2/3 right-1/3 w-1 h-1 bg-lime-200 rounded-full animate-twinkle animation-delay-3000"></div>
-    </div>
-  </div>
-
-  {/* Content */}
-  <div className="relative z-10 max-w-6xl mx-auto px-6">
-    {/* Section Header */}
-    <div className="text-center mb-12">
-      <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-6 py-2 rounded-full mb-4 border border-white/20">
-        <FaCalendarAlt className="text-green-300" />
-        <span className="text-white font-semibold text-sm uppercase tracking-wider">
-          Community Events
-        </span>
-      </div>
-      <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-2xl">
-        📅 Upcoming Events
-      </h2>
-      <p className="text-white/95 text-lg max-w-2xl mx-auto drop-shadow-lg">
-        Join community events and make a difference together
-      </p>
-    </div>
-
-    {loading ? (
-      <div className="flex justify-center items-center py-12">
-        <div className="relative">
-          <div className="w-16 h-16 border-4 border-white/30 rounded-full"></div>
-          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
-        </div>
-        <p className="ml-4 text-white font-medium text-lg">Loading events...</p>
-      </div>
-    ) : events.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <EventCard key={event._id} event={event} />  
-        ))}
-      </div>
-    ) : (
-      <div className="text-center py-16 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20">
-        <div className="text-6xl mb-4">📅</div>
-        <p className="text-white text-2xl font-semibold mb-2">No upcoming events</p>
-        <p className="text-white/80 text-lg">Check back soon for community events!</p>
-      </div>
-    )}
-  </div>
-
-  {/* Advanced CSS Animations */}
-  <style>{`
-    @keyframes slowZoom {
-      0% {
-        transform: scale(1);
-      }
-      100% {
-        transform: scale(1.1);
-      }
-    }
-
-    @keyframes float-diagonal {
-      0%, 100% {
-        transform: translate(0, 0) scale(1);
-        opacity: 0.3;
-      }
-      50% {
-        transform: translate(50px, -50px) scale(1.2);
-        opacity: 0.6;
-      }
-    }
-
-    @keyframes float-reverse {
-      0%, 100% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 0.4;
-      }
-      33% {
-        transform: translate(-40px, 30px) rotate(120deg);
-        opacity: 0.7;
-      }
-      66% {
-        transform: translate(20px, -40px) rotate(240deg);
-        opacity: 0.5;
-      }
-    }
-
-    @keyframes wave {
-      0% {
-        background-position: 0% 0%;
-      }
-      100% {
-        background-position: 200% 200%;
-      }
-    }
-
-    @keyframes beam-slow {
-      0%, 100% {
-        opacity: 0.1;
-      }
-      50% {
-        opacity: 0.3;
-      }
-    }
-
-    @keyframes twinkle {
-      0%, 100% {
-        opacity: 0;
-        transform: scale(0);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.5);
-      }
-    }
-
-    .animate-float-diagonal {
-      animation: float-diagonal 10s ease-in-out infinite;
-    }
-
-    .animate-float-reverse {
-      animation: float-reverse 12s ease-in-out infinite;
-    }
-
-    .animate-beam-slow {
-      animation: beam-slow 6s ease-in-out infinite;
-    }
-
-    .animate-twinkle {
-      animation: twinkle 3s ease-in-out infinite;
-    }
-
-    .animation-delay-1000 {
-      animation-delay: 1s;
-    }
-
-    .animation-delay-2000 {
-      animation-delay: 2s;
-    }
-
-    .animation-delay-3000 {
-      animation-delay: 3s;
-    }
-
-    .animation-delay-4000 {
-      animation-delay: 4s;
-    }
-  `}</style>
-</div>
+<UpcomingEventsSection />
 
       {/* Why Go Green Section */}
-      <div className="bg-green-50 py-16">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            Why Go Green? 🌍
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FeatureCard
-              title="Make an Impact"
-              description="Every small action counts towards a healthier planet"
-              icon="🌱"
-            />
-            <FeatureCard
-              title="Join a Community"
-              description="Connect with like-minded eco-warriors worldwide"
-              icon="👥"
-            />
-            <FeatureCard
-              title="Track Progress"
-              description="Monitor your environmental impact and earn rewards"
-              icon="📊"
-            />
-          </div>
-        </div>
-      </div>
+      <WhyGoGreenSection />
+
+      {/*How It Work Section*/}
+      <HowItWorksSection />
     </div>
   );
 };
@@ -745,184 +531,7 @@ const TipCard = ({ tip }) => {
     </div>
   );
 };
-const EventCard = ({ event }) => {
-  const [imageError, setImageError] = useState(false);
 
-  const getLocationIcon = (type) => {
-    const icons = {
-      Online: <FaLaptop className="text-blue-600" />,
-      Physical: <FaMapMarkerAlt className="text-red-600" />,
-      Hybrid: <FaGlobeAmericas className="text-purple-600" />
-    };
-    return icons[type] || <FaMapMarkerAlt className="text-gray-600" />;
-  };
-
-  const getCategoryConfig = (category) => {
-    const configs = {
-      'Tree Planting': { 
-        gradient: 'from-green-500 to-emerald-600',
-        icon: <FaTree className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&auto=format&fit=crop'
-      },
-      'Beach Cleanup': { 
-        gradient: 'from-cyan-500 to-blue-600',
-        icon: <FaWater className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&auto=format&fit=crop'
-      },
-      'Community Garden': { 
-        gradient: 'from-lime-500 to-green-600',
-        icon: <FaSeedling className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&auto=format&fit=crop'
-      },
-      'Recycling Drive': { 
-        gradient: 'from-orange-500 to-red-600',
-        icon: <FaRecycle className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800&auto=format&fit=crop'
-      },
-      'Workshop': { 
-        gradient: 'from-purple-500 to-indigo-600',
-        icon: <FaUsers className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&auto=format&fit=crop'
-      },
-      'Awareness Campaign': { 
-        gradient: 'from-yellow-500 to-orange-600',
-        icon: <FaLightbulb className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1501901609772-df0848060b33?w=800&auto=format&fit=crop'
-      },
-      'Environmental': { 
-        gradient: 'from-teal-500 to-cyan-600',
-        icon: <FaLeaf className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&auto=format&fit=crop'
-      },
-      'Event': { 
-        gradient: 'from-emerald-500 to-green-600',
-        icon: <FaCalendarAlt className="text-white" />,
-        fallbackImage: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&auto=format&fit=crop'
-      }
-    };
-    return configs[category] || configs.Event;
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
-  };
-
-  const categoryConfig = getCategoryConfig(event.category);
-
-  return (
-    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col">
-      {/* Event Image - Fixed Height */}
-      <div className="relative h-48 overflow-hidden flex-shrink-0">
-        {!imageError && event.imageUrl ? (
-          <img 
-            src={event.imageUrl}
-            alt={event.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="relative w-full h-full">
-            <img 
-              src={categoryConfig.fallbackImage}
-              alt={event.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-            />
-            <div className={`absolute inset-0 bg-gradient-to-br ${categoryConfig.gradient} opacity-40`}></div>
-          </div>
-        )}
-        
-        {/* Gradient Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
-        {/* Featured Badge */}
-        {event.featured && (
-          <div className="absolute top-3 left-3">
-            <span className="px-3 py-1.5 bg-yellow-400 text-yellow-900 rounded-lg text-xs font-bold shadow-lg backdrop-blur-sm flex items-center gap-1">
-              <FaTrophy className="w-3 h-3" />
-              Featured
-            </span>
-          </div>
-        )}
-
-        {/* Category Badge */}
-        <div className={`absolute top-3 right-3 px-3 py-1.5 rounded-lg bg-gradient-to-r ${categoryConfig.gradient} text-white text-xs font-bold shadow-lg backdrop-blur-sm flex items-center gap-1`}>
-          {categoryConfig.icon}
-          <span>{event.category || 'Event'}</span>
-        </div>
-      </div>
-
-      {/* Event Details - Flexible Height */}
-      <div className="p-5 flex-grow flex flex-col">
-        {/* Title */}
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-green-600 transition-colors">
-          {event.title}
-        </h3>
-
-        {/* Description */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-grow">
-          {event.description}
-        </p>
-
-        {/* Date & Time */}
-        <div className="flex items-center gap-2 text-sm text-gray-700 mb-2">
-          <FaClock className="w-4 h-4 text-blue-600 flex-shrink-0" />
-          <span className="font-medium">{formatDate(event.eventDate || event.date)}</span>
-          {event.eventTime && (
-            <>
-              <span className="text-gray-400">•</span>
-              <span className="text-gray-600">{event.eventTime}</span>
-            </>
-          )}
-        </div>
-
-        {/* Location */}
-        {event.location && (
-          <div className="flex items-center gap-2 text-sm text-gray-700 mb-4">
-            {typeof event.location === 'string' ? (
-              <>
-                <FaMapMarkerAlt className="w-4 h-4 text-red-600 flex-shrink-0" />
-                <span className="font-medium truncate">{event.location}</span>
-              </>
-            ) : (
-              <>
-                {getLocationIcon(event.location.type)}
-                <span className="font-medium">{event.location.type}</span>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* Footer - Registration & Points */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-          <div className="flex items-center gap-2">
-            <FaUsers className="w-4 h-4 text-green-600" />
-            <div className="text-sm">
-              <span className="font-bold text-gray-900">
-                {event.registeredCount || event.currentParticipants || 0}
-              </span>
-              <span className="text-gray-500">/{event.capacity || event.maxParticipants || 0}</span>
-            </div>
-          </div>
-          
-          {event.points && (
-            <div className="flex items-center gap-1 bg-green-50 px-3 py-1.5 rounded-lg">
-              <FaTrophy className="w-3 h-3 text-yellow-600" />
-              <span className="text-sm font-bold text-green-700">+{event.points}</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Bottom Accent Bar */}
-      <div className={`h-1 bg-gradient-to-r ${categoryConfig.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`} />
-    </div>
-  );
-};
 
 const FeatureCard = ({ title, description, icon }) => (
   <div className="text-center">

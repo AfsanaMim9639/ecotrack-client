@@ -5,14 +5,14 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-to-br from-green-900 via-green-800 to-green-900 text-white overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-green-900/95 via-emerald-900/90 to-teal-900/95 text-white overflow-hidden">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 animate-float-slow">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-green-400 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-10 w-32 h-32 bg-emerald-400 rounded-full blur-3xl"></div>
           <div className="absolute top-40 right-20 w-40 h-40 bg-green-300 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-1/3 w-36 h-36 bg-green-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-1/4 w-28 h-28 bg-green-400 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-1/3 w-36 h-36 bg-teal-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-1/4 w-28 h-28 bg-emerald-400 rounded-full blur-3xl"></div>
         </div>
       </div>
 
@@ -38,13 +38,13 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-2xl font-bold">
-              <FaLeaf className="animate-pulse" />
+              <FaLeaf className="animate-pulse text-green-300" />
               <span>EcoTrack</span>
             </div>
-            <p className="text-green-100 text-sm leading-relaxed">
+            <p className="text-green-50/90 text-sm leading-relaxed">
               Empowering individuals to make a positive environmental impact through sustainable challenges and community action.
             </p>
-            <div className="flex items-center gap-2 text-green-200 text-sm">
+            <div className="flex items-center gap-2 text-green-100/80 text-sm">
               <FaHeart className="text-red-400 animate-pulse" />
               <span>Building a greener future together</span>
             </div>
@@ -52,34 +52,34 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-green-100">Quick Links</h3>
+            <h3 className="text-lg font-bold text-green-50">Quick Links</h3>
             <div className="flex flex-col gap-2">
               <Link 
                 to="/about" 
-                className="text-green-200 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
               >
-                <span className="w-1 h-1 bg-green-400 rounded-full group-hover:w-2 transition-all"></span>
+                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
                 About Us
               </Link>
               <Link 
                 to="/contact" 
-                className="text-green-200 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
               >
-                <span className="w-1 h-1 bg-green-400 rounded-full group-hover:w-2 transition-all"></span>
+                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
                 Contact
               </Link>
               <Link 
                 to="/challenges" 
-                className="text-green-200 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
               >
-                <span className="w-1 h-1 bg-green-400 rounded-full group-hover:w-2 transition-all"></span>
+                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
                 Challenges
               </Link>
               <Link 
                 to="/leaderboard" 
-                className="text-green-200 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
               >
-                <span className="w-1 h-1 bg-green-400 rounded-full group-hover:w-2 transition-all"></span>
+                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
                 Leaderboard
               </Link>
             </div>
@@ -87,8 +87,8 @@ const Footer = () => {
 
           {/* Social Media & Contact */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-green-100">Connect With Us</h3>
-            <p className="text-green-200 text-sm">
+            <h3 className="text-lg font-bold text-green-50">Connect With Us</h3>
+            <p className="text-green-100/80 text-sm">
               Follow us on social media for daily eco-tips and updates!
             </p>
             <div className="flex gap-4">
@@ -96,7 +96,7 @@ const Footer = () => {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-700 hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                className="w-10 h-10 bg-green-800/60 hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
               >
                 <FaFacebook className="text-xl" />
               </a>
@@ -104,7 +104,7 @@ const Footer = () => {
                 href="https://x.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-700 hover:bg-black rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                className="w-10 h-10 bg-green-800/60 hover:bg-black rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
                 aria-label="Follow us on X (Twitter)"
               >
                 <svg 
@@ -119,7 +119,7 @@ const Footer = () => {
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-700 hover:bg-pink-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                className="w-10 h-10 bg-green-800/60 hover:bg-pink-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
               >
                 <FaInstagram className="text-xl" />
               </a>
@@ -127,7 +127,7 @@ const Footer = () => {
                 href="https://linkedin.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-700 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                className="w-10 h-10 bg-green-800/60 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
               >
                 <FaLinkedin className="text-xl" />
               </a>
@@ -135,7 +135,7 @@ const Footer = () => {
                 href="https://github.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-700 hover:bg-gray-800 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                className="w-10 h-10 bg-green-800/60 hover:bg-gray-800 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
               >
                 <FaGithub className="text-xl" />
               </a>
@@ -144,10 +144,10 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-green-700 my-8"></div>
+        <div className="border-t border-green-700/50 my-8"></div>
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-green-200">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-green-100/70">
           <div className="flex items-center gap-2">
             <span>© {currentYear} EcoTrack.</span>
             <span>All rights reserved.</span>
@@ -162,7 +162,7 @@ const Footer = () => {
               <FaShieldAlt className="text-xs" />
               <span>Privacy Policy</span>
             </Link>
-            <span className="text-green-700">|</span>
+            <span className="text-green-700/60">|</span>
             <Link 
               to="/accessibility" 
               className="flex items-center gap-1 hover:text-white transition-colors"
@@ -170,7 +170,7 @@ const Footer = () => {
               <FaUniversalAccess className="text-xs" />
               <span>Accessibility</span>
             </Link>
-            <span className="text-green-700">|</span>
+            <span className="text-green-700/60">|</span>
             <Link 
               to="/terms" 
               className="hover:text-white transition-colors"
@@ -181,8 +181,8 @@ const Footer = () => {
         </div>
 
         {/* Additional Accessibility Note */}
-        <div className="mt-6 pt-6 border-t border-green-700/50 text-center">
-          <p className="text-xs text-green-300 leading-relaxed max-w-3xl mx-auto">
+        <div className="mt-6 pt-6 border-t border-green-700/30 text-center">
+          <p className="text-xs text-green-200/70 leading-relaxed max-w-3xl mx-auto">
             <FaUniversalAccess className="inline mr-1" />
             We're committed to making EcoTrack accessible to everyone. If you experience any accessibility issues, 
             please contact us at <a href="mailto:accessibility@ecotrack.com" className="underline hover:text-white">accessibility@ecotrack.com</a>
@@ -191,7 +191,7 @@ const Footer = () => {
       </div>
 
       {/* Wave Animation at Top */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 via-green-500 to-green-400 animate-wave"></div>
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-green-500 to-teal-400 animate-wave"></div>
 
       <style>{`
         @keyframes float {

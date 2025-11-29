@@ -3,6 +3,7 @@ import ProtectedRoute from '../components/auth/ProtectedRoute';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import ForgotPassword from '../pages/ForgotPassword';
 import Challenges from '../pages/Challenges';
 import ChallengeDetails from '../pages/ChallengeDetails';
 import MyActivities from '../pages/MyActivities';
@@ -17,6 +18,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/challenges" element={<Challenges />} />
       <Route path="/challenges/:id" element={<ChallengeDetails />} />
       <Route path="/leaderboard" element={<Leaderboard />} />

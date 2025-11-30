@@ -1,9 +1,8 @@
-// src/pages/auth/ForgotPassword.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { FaLeaf, FaEnvelope, FaArrowLeft, FaSpinner } from 'react-icons/fa';
-import api from '../services/api';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth'; // ✅ Firebase import
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -20,29 +19,32 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      // Call your backend API to send reset email
-      await api.post('/auth/forgot-password', { email });
+      const auth = getAuth();
+      
+      // ✅ Firebase automatically sends password reset email
+      await sendPasswordResetEmail(auth, email);
       
       setEmailSent(true);
       toast.success('Password reset link sent! Check your email.', {
         duration: 5000,
         icon: '✅',
-        style: {
-          borderRadius: '10px',
-          background: '#10b981',
-          color: '#fff',
-        },
       });
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || 'Failed to send reset email. Please try again.', {
+      
+      let errorMessage = 'Failed to send reset email';
+      
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No account found with this email';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many requests. Please try again later';
+      }
+      
+      toast.error(errorMessage, {
         duration: 4000,
         icon: '❌',
-        style: {
-          borderRadius: '10px',
-          background: '#ef4444',
-          color: '#fff',
-        },
       });
     } finally {
       setLoading(false);

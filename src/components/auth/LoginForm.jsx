@@ -9,6 +9,10 @@ const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false
+  });
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,11 +20,32 @@ const LoginForm = () => {
   // Get the intended route from location state, default to home
   const from = location.state?.from?.pathname || '/';
 
+  // Email validation
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleBlur = (field) => {
+    setTouched({
+      ...touched,
+      [field]: true
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Mark all fields as touched
+    setTouched({
+      email: true,
+      password: true
+    });
     
     if (!email || !password) {
       toast.error('Please fill in all fields');
+      return;
+    }
+
+    if (!isEmailValid) {
+      toast.error('Please enter a valid email address');
       return;
     }
 
@@ -38,7 +63,6 @@ const LoginForm = () => {
       });
       navigate(from, { replace: true });
     } catch (error) {
-      console.error(error);
       toast.error(error.message || 'Failed to login. Please check your credentials.', {
         duration: 4000,
         icon: '❌',
@@ -68,7 +92,6 @@ const LoginForm = () => {
       });
       navigate(from, { replace: true });
     } catch (error) {
-      console.error(error);
       toast.error(error.message || 'Failed to login with Google. Please try again.', {
         duration: 4000,
         icon: '❌',
@@ -120,7 +143,7 @@ const LoginForm = () => {
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
+                Email Address *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -131,17 +154,26 @@ const LoginForm = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 outline-none"
+                  onBlur={() => handleBlur('email')}
+                  className={`block w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 outline-none ${
+                    touched.email && (!email.trim() || !isEmailValid) ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
                   placeholder="your@email.com"
                   required
                 />
               </div>
+              {touched.email && !email.trim() && (
+                <p className="mt-1 text-xs text-red-600">Email is required</p>
+              )}
+              {touched.email && email.trim() && !isEmailValid && (
+                <p className="mt-1 text-xs text-red-600">Please enter a valid email address</p>
+              )}
             </div>
 
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
+                Password *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -152,11 +184,17 @@ const LoginForm = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 outline-none"
+                  onBlur={() => handleBlur('password')}
+                  className={`block w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 outline-none ${
+                    touched.password && !password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
                   placeholder="••••••••"
                   required
                 />
               </div>
+              {touched.password && !password && (
+                <p className="mt-1 text-xs text-red-600">Password is required</p>
+              )}
             </div>
 
             {/* Forgot Password Link */}

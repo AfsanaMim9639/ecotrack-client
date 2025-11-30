@@ -6,9 +6,11 @@ import Register from '../pages/Register';
 import ForgotPassword from '../pages/ForgotPassword';
 import Challenges from '../pages/Challenges';
 import ChallengeDetails from '../pages/ChallengeDetails';
+import AddChallenge from '../pages/AddChallenge';
+import JoinChallenge from '../pages/JoinChallenge';
 import MyActivities from '../pages/MyActivities';
-import Leaderboard from '../pages/Leaderboard';
-import Profile from '../pages/Profile';
+import ActivityDetail from '../pages/ActivityDetail';
+import Leaderboard from '../pages/Leaderboard'; // ✅ NEW
 import NotFound from '../pages/NotFound';
 
 const AppRoutes = () => {
@@ -21,9 +23,25 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/challenges" element={<Challenges />} />
       <Route path="/challenges/:id" element={<ChallengeDetails />} />
-      <Route path="/leaderboard" element={<Leaderboard />} />
+      <Route path="/leaderboard" element={<Leaderboard />} /> {/* ✅ NEW */}
 
       {/* Protected Routes */}
+      <Route
+        path="/challenges/add"
+        element={
+          <ProtectedRoute>
+            <AddChallenge />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/challenges/join/:id"
+        element={
+          <ProtectedRoute>
+            <JoinChallenge />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/my-activities"
         element={
@@ -33,10 +51,10 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/profile"
+        path="/my-activities/:id"
         element={
           <ProtectedRoute>
-            <Profile />
+            <ActivityDetail />
           </ProtectedRoute>
         }
       />

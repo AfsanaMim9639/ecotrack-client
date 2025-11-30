@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
-import { FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaLeaf, FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +17,12 @@ const RegisterForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false
+  });
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
@@ -34,6 +40,9 @@ const RegisterForm = () => {
     passwordValidation.hasSpecialChar &&
     passwordValidation.hasMinLength;
 
+  // Email validation
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -41,8 +50,23 @@ const RegisterForm = () => {
     });
   };
 
+  const handleBlur = (field) => {
+    setTouched({
+      ...touched,
+      [field]: true
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Mark all fields as touched
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+      confirmPassword: true
+    });
 
     if (!formData.name.trim()) {
       toast.error('Please enter your name');
@@ -51,6 +75,11 @@ const RegisterForm = () => {
 
     if (!formData.email.trim()) {
       toast.error('Please enter your email');
+      return;
+    }
+
+    if (!isEmailValid) {
+      toast.error('Please enter a valid email address');
       return;
     }
 
@@ -96,47 +125,73 @@ const RegisterForm = () => {
 
   return (
     <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-      <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
-        Join EcoTrack 🌍
-      </h2>
+      {/* Header with Logo */}
+      <div className="text-center mb-6">
+        <div className="flex justify-center mb-4">
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-full shadow-lg">
+            <FaLeaf className="text-4xl text-white animate-pulse" />
+          </div>
+        </div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          Join EcoTrack 
+        </h2>
+        <p className="text-gray-600 text-sm">
+          Start your sustainable journey today
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name Field */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Name
+            Name *
           </label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+            onBlur={() => handleBlur('name')}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none ${
+              touched.name && !formData.name.trim() ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            }`}
             placeholder="John Doe"
             required
           />
+          {touched.name && !formData.name.trim() && (
+            <p className="mt-1 text-xs text-red-600">Name is required</p>
+          )}
         </div>
 
         {/* Email Field */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email
+            Email *
           </label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+            onBlur={() => handleBlur('email')}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none ${
+              touched.email && (!formData.email.trim() || !isEmailValid) ? 'border-red-500 bg-red-50' : 'border-gray-300'
+            }`}
             placeholder="your@email.com"
             required
           />
+          {touched.email && !formData.email.trim() && (
+            <p className="mt-1 text-xs text-red-600">Email is required</p>
+          )}
+          {touched.email && formData.email.trim() && !isEmailValid && (
+            <p className="mt-1 text-xs text-red-600">Please enter a valid email address</p>
+          )}
         </div>
 
         {/* Photo URL Field */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Photo URL
+            Photo URL <span className="text-gray-400">(Optional)</span>
           </label>
           <input
             type="url"
@@ -151,7 +206,7 @@ const RegisterForm = () => {
         {/* Password Field */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Password
+            Password *
           </label>
           <div className="relative">
             <input
@@ -160,10 +215,9 @@ const RegisterForm = () => {
               value={formData.password}
               onChange={handleChange}
               onFocus={() => setPasswordFocused(true)}
+              onBlur={() => handleBlur('password')}
               className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none ${
-                passwordFocused && !isPasswordValid && formData.password
-                  ? 'border-red-300 bg-red-50'
-                  : 'border-gray-300'
+                touched.password && (!formData.password || !isPasswordValid) ? 'border-red-500 bg-red-50' : 'border-gray-300'
               }`}
               placeholder="••••••••"
               required
@@ -176,6 +230,10 @@ const RegisterForm = () => {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+
+          {touched.password && !formData.password && (
+            <p className="mt-1 text-xs text-red-600">Password is required</p>
+          )}
 
           {/* Password Requirements */}
           {(passwordFocused || formData.password) && (
@@ -232,7 +290,7 @@ const RegisterForm = () => {
         {/* Confirm Password Field */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Confirm Password
+            Confirm Password *
           </label>
           <div className="relative">
             <input
@@ -240,7 +298,10 @@ const RegisterForm = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+              onBlur={() => handleBlur('confirmPassword')}
+              className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none ${
+                touched.confirmPassword && formData.password !== formData.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              }`}
               placeholder="••••••••"
               required
             />
@@ -252,7 +313,10 @@ const RegisterForm = () => {
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-          {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+          {touched.confirmPassword && !formData.confirmPassword && (
+            <p className="mt-1 text-xs text-red-600">Please confirm your password</p>
+          )}
+          {touched.confirmPassword && formData.confirmPassword && formData.password !== formData.confirmPassword && (
             <p className="mt-1 text-xs text-red-600">Passwords do not match</p>
           )}
         </div>

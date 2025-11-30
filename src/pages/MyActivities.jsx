@@ -1,13 +1,10 @@
-// ============================================
-// FILE: src/pages/MyActivities.jsx (REPLACE COMPLETE FILE)
-// ============================================
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import userChallengeService from '../services/userChallengeService';
+import UpdateProgressModal from '../components/activities/UpdateProgressModal';
 import toast from 'react-hot-toast';
-import { FaClock, FaCheckCircle, FaCalendarAlt, FaTrophy } from 'react-icons/fa';
+import { FaClock, FaCheckCircle, FaCalendarAlt, FaTrophy, FaHistory } from 'react-icons/fa';
 
 const MyActivities = () => {
   const { currentUser } = useAuth();
@@ -15,6 +12,8 @@ const MyActivities = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('active');
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (!currentUser) {
@@ -29,25 +28,17 @@ const MyActivities = () => {
     
     setLoading(true);
     try {
-      console.log('🔍 Fetching activities for user:', currentUser.uid);
-      console.log('📊 Filter:', filter);
-      
-      // Pass userId and status
       const response = await userChallengeService.getUserChallenges(
         currentUser.uid,
         filter !== 'all' ? filter : null
       );
       
-      console.log('✅ Activities response:', response);
-      
       if (response.success && response.data) {
         setActivities(response.data);
-        console.log('📝 Activities set:', response.data.length);
       } else {
         setActivities([]);
       }
     } catch (error) {
-      console.error('❌ Error fetching activities:', error);
       toast.error(error.message || 'Failed to load activities');
       setActivities([]);
     } finally {
@@ -55,28 +46,18 @@ const MyActivities = () => {
     }
   };
 
-  const handleUpdateProgress = async (activityId) => {
-    const progressInput = prompt('Enter progress percentage (0-100):');
-    
-    if (progressInput === null) return;
-    
-    const progressPercentage = parseInt(progressInput);
-    
-    if (isNaN(progressPercentage) || progressPercentage < 0 || progressPercentage > 100) {
-      toast.error('Please enter a valid number between 0 and 100');
-      return;
-    }
-    
+  const handleUpdateProgress = (activity) => {
+    setSelectedActivity(activity);
+    setShowModal(true);
+  };
+
+  const handleSaveProgress = async (progressData) => {
     try {
-      await userChallengeService.updateProgress(
-        activityId,
-        currentUser.uid,
-        { progressPercentage }
-      );
+      await userChallengeService.updateProgress(selectedActivity._id, progressData);
       toast.success('Progress updated! 🎉');
+      setShowModal(false);
       fetchActivities();
     } catch (error) {
-      console.error('Error updating progress:', error);
       toast.error(error.message || 'Failed to update progress');
     }
   };
@@ -138,8 +119,6 @@ const MyActivities = () => {
           </button>
         </div>
 
-        
-
         {/* Activities List */}
         {loading ? (
           <div className="text-center py-12">
@@ -152,7 +131,8 @@ const MyActivities = () => {
               <ActivityCard
                 key={activity._id}
                 activity={activity}
-                onUpdate={handleUpdateProgress}
+                onUpdate={() => handleUpdateProgress(activity)}
+                onViewDetails={() => navigate(`/my-activities/${activity._id}`)}
               />
             ))}
           </div>
@@ -174,22 +154,26 @@ const MyActivities = () => {
           </div>
         )}
       </div>
+
+      {/* Update Progress Modal */}
+      {showModal && selectedActivity && (
+        <UpdateProgressModal
+          activity={selectedActivity}
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveProgress}
+        />
+      )}
     </div>
   );
 };
 
-const ActivityCard = ({ activity, onUpdate }) => {
+const ActivityCard = ({ activity, onUpdate, onViewDetails }) => {
   const challenge = activity.challengeId;
   
-  // Status colors - match schema enum values
   const statusColors = {
     'active': 'bg-blue-100 text-blue-800',
     'completed': 'bg-green-100 text-green-800',
-    'abandoned': 'bg-gray-100 text-gray-800',
-    // Legacy support
-    'Not Started': 'bg-gray-100 text-gray-800',
-    'Ongoing': 'bg-blue-100 text-blue-800',
-    'Finished': 'bg-green-100 text-green-800'
+    'abandoned': 'bg-gray-100 text-gray-800'
   };
 
   const statusLabels = {
@@ -230,39 +214,52 @@ const ActivityCard = ({ activity, onUpdate }) => {
       </div>
 
       {/* Stats */}
-      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-        <div className="flex items-center gap-1">
+      <div className="space-y-2 text-sm text-gray-600 mb-4">
+        <div className="flex items-center gap-2">
           <FaClock className="text-blue-600" />
           <span>{challenge?.duration || 30} days</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <FaCalendarAlt className="text-purple-600" />
           <span className="text-xs">
             Joined: {new Date(activity.joinedDate || activity.joinDate).toLocaleDateString()}
           </span>
         </div>
+        {/* ✅ NEW: Last Updated */}
+        {activity.lastUpdated && (
+          <div className="flex items-center gap-2">
+            <FaHistory className="text-orange-600" />
+            <span className="text-xs">
+              Last updated: {new Date(activity.lastUpdated).toLocaleDateString()}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Action Button */}
-      {activity.status === 'active' && (
+      {/* Action Buttons */}
+      <div className="flex gap-2">
+        {activity.status === 'active' && (
+          <button
+            onClick={onUpdate}
+            className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
+          >
+            <FaCheckCircle />
+            Update Progress
+          </button>
+        )}
+        
         <button
-          onClick={() => onUpdate(activity._id)}
-          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
+          onClick={onViewDetails}
+          className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
         >
-          <FaCheckCircle />
-          Update Progress
+          <FaHistory />
+          View History
         </button>
-      )}
+      </div>
       
       {activity.status === 'completed' && (
-        <div className="text-center py-2 bg-green-50 text-green-700 font-semibold rounded-lg">
+        <div className="mt-2 text-center py-2 bg-green-50 text-green-700 font-semibold rounded-lg">
           ✅ Completed on {new Date(activity.completedDate).toLocaleDateString()}
-        </div>
-      )}
-
-      {activity.status === 'abandoned' && (
-        <div className="text-center py-2 bg-gray-50 text-gray-600 rounded-lg">
-          Abandoned
         </div>
       )}
     </div>
@@ -270,4 +267,3 @@ const ActivityCard = ({ activity, onUpdate }) => {
 };
 
 export default MyActivities;
-

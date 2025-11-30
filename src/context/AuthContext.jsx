@@ -16,34 +16,50 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [user, setUser] = useState(null); // MongoDB user data with role
   const [loading, setLoading] = useState(true);
 
-  // Create user profile in database
-  const createUserProfile = async (user) => {
+  // Create user profile in database and return the profile
+  const createUserProfile = async (firebaseUser) => {
     try {
-      await userService.getOrCreateProfile({
-        userId: user.uid,
-        email: user.email,
-        displayName: user.displayName || user.email.split('@')[0],
-        photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=22c55e&color=fff`
+      const profileData = await userService.getOrCreateProfile({
+        userId: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+        photoURL: firebaseUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(firebaseUser.email)}&background=22c55e&color=fff`
       });
       console.log('✅ User profile created/updated');
+      return profileData;
     } catch (error) {
       console.error('Error creating user profile:', error);
+      return null;
+    }
+  };
+
+  // Fetch user profile from database
+  const fetchUserProfile = async (userId) => {
+    try {
+      const response = await userService.getUserProfile(userId);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
     }
   };
 
   // Register with email/password
   const register = async (email, password) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    await createUserProfile(result.user);
+    const profile = await createUserProfile(result.user);
+    setUser(profile);
     return result;
   };
 
   // Login with email/password
   const login = async (email, password) => {
     const result = await signInWithEmailAndPassword(auth, email, password);
-    await createUserProfile(result.user);
+    const profile = await fetchUserProfile(result.user.uid);
+    setUser(profile);
     return result;
   };
 
@@ -51,12 +67,14 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    await createUserProfile(result.user);
+    const profile = await createUserProfile(result.user);
+    setUser(profile);
     return result;
   };
 
   // Logout
   const logout = () => {
+    setUser(null);
     return signOut(auth);
   };
 
@@ -69,12 +87,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        
-        await createUserProfile(user);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        await createUserProfile(firebaseUser);
+        // Fetch the full user profile from database
+        const profile = await fetchUserProfile(firebaseUser.uid);
+        setUser(profile);
+      } else {
+        setUser(null);
       }
-      setCurrentUser(user);
+      setCurrentUser(firebaseUser);
       setLoading(false);
     });
 
@@ -82,7 +104,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const value = {
-    currentUser,
+    currentUser, // Firebase user
+    user, // MongoDB user data with role
     register,
     login,
     loginWithGoogle,

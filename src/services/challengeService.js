@@ -29,6 +29,18 @@ export const challengeService = {
   deleteChallenge: async (id) => {
     const response = await api.delete(`/challenges/${id}`);
     return response.data;
+  },
+
+  // Increment participants
+  incrementParticipants: async (id) => {
+    const response = await api.post(`/challenges/${id}/increment`);
+    return response.data;
+  },
+
+  // Decrement participants
+  decrementParticipants: async (id) => {
+    const response = await api.post(`/challenges/${id}/decrement`);
+    return response.data;
   }
 };
 

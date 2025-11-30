@@ -6,8 +6,8 @@ import toast from 'react-hot-toast';
 import { FaTrophy, FaFire, FaChartLine } from 'react-icons/fa';
 
 const Leaderboard = () => {
-  const { currentUser } = useAuth();
-  const [leaderboard, setLeaderboard] = useState([]); // ✅ Default empty array
+  const { currentUser, user } = useAuth(); // Add 'user' from context
+  const [leaderboard, setLeaderboard] = useState([]);
   const [myRank, setMyRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('points');
@@ -23,16 +23,16 @@ const Leaderboard = () => {
     setLoading(true);
     try {
       const response = await leaderboardService.getLeaderboard(filterType, 50);
-      // ✅ Fixed: Check if response.data exists and is array
+      
       if (response && response.data && Array.isArray(response.data)) {
         setLeaderboard(response.data);
       } else {
-        setLeaderboard([]); // Fallback to empty array
+        setLeaderboard([]);
         console.warn('Invalid leaderboard data:', response);
       }
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
-      setLeaderboard([]); // ✅ Set empty array on error
+      setLeaderboard([]);
       toast.error(error.message || 'Failed to load leaderboard');
     } finally {
       setLoading(false);
@@ -45,8 +45,19 @@ const Leaderboard = () => {
       setMyRank(response.data);
     } catch (error) {
       console.error('Error fetching rank:', error);
-      // Don't show error if user profile doesn't exist yet
-      if (error.status !== 404) {
+      
+      // Set default rank data if error
+      setMyRank({
+        position: 0,
+        totalPoints: 0,
+        currentStreak: 0,
+        badges: [],
+        rank: 'Beginner',
+        percentile: 100
+      });
+      
+      // Only show error if not 404
+      if (error.response?.status !== 404) {
         toast.error('Failed to load your rank');
       }
     }
@@ -71,7 +82,9 @@ const Leaderboard = () => {
           <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-lg shadow-lg p-6 mb-8 text-white">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold">{myRank.position || 0}</div>
+                <div className="text-3xl font-bold">
+                  {myRank.position === 0 ? '-' : myRank.position}
+                </div>
                 <div className="text-sm opacity-90">Your Rank</div>
               </div>
               <div className="text-center">
@@ -89,10 +102,19 @@ const Leaderboard = () => {
             </div>
             <div className="mt-4 text-center">
               <div className="inline-block bg-white bg-opacity-20 px-4 py-2 rounded-full">
-                <span className="font-semibold">{myRank.rank || 'Beginner'}</span> • 
-                <span className="ml-2">Top {myRank.percentile || 0}%</span>
+                <span className="font-semibold">{myRank.rank || 'Beginner'}</span>
+                {myRank.position > 0 && (
+                  <span className="ml-2">• Top {myRank.percentile || 100}%</span>
+                )}
               </div>
             </div>
+            
+            {/* Show message if no activity */}
+            {myRank.position === 0 && (
+              <div className="mt-4 text-center text-sm opacity-90">
+                Complete challenges to appear on the leaderboard!
+              </div>
+            )}
           </div>
         )}
 
@@ -141,7 +163,7 @@ const Leaderboard = () => {
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
             <p className="text-gray-600 mt-4">Loading leaderboard...</p>
           </div>
-        ) : leaderboard && leaderboard.length > 0 ? ( // ✅ Fixed: Added null check
+        ) : leaderboard && leaderboard.length > 0 ? (
           <LeaderboardTable
             leaderboard={leaderboard}
             currentUserId={currentUser?.uid}

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import userChallengeService from '../services/userChallengeService';
 import UpdateProgressModal from '../components/activities/UpdateProgressModal';
 import toast from 'react-hot-toast';
-import { FaClock, FaCheckCircle, FaCalendarAlt, FaTrophy, FaHistory } from 'react-icons/fa';
+import { FaClock, FaCheckCircle, FaCalendarAlt, FaTrophy, FaHistory, FaEye } from 'react-icons/fa';
 
 const MyActivities = () => {
   const { currentUser } = useAuth();
@@ -49,6 +49,12 @@ const MyActivities = () => {
   const handleUpdateProgress = (activity) => {
     setSelectedActivity(activity);
     setShowModal(true);
+  };
+
+  const handleViewDetails = (activityId) => {
+    // ✅ FIX: Properly navigate to activity details page
+    console.log('Navigating to:', `/my-activities/${activityId}`);
+    navigate(`/my-activities/${activityId}`);
   };
 
   const handleSaveProgress = async (progressData) => {
@@ -132,7 +138,7 @@ const MyActivities = () => {
                 key={activity._id}
                 activity={activity}
                 onUpdate={() => handleUpdateProgress(activity)}
-                onViewDetails={() => navigate(`/my-activities/${activity._id}`)}
+                onViewDetails={() => handleViewDetails(activity._id)}
               />
             ))}
           </div>
@@ -225,7 +231,6 @@ const ActivityCard = ({ activity, onUpdate, onViewDetails }) => {
             Joined: {new Date(activity.joinedDate || activity.joinDate).toLocaleDateString()}
           </span>
         </div>
-        {/* ✅ NEW: Last Updated */}
         {activity.lastUpdated && (
           <div className="flex items-center gap-2">
             <FaHistory className="text-orange-600" />
@@ -249,11 +254,15 @@ const ActivityCard = ({ activity, onUpdate, onViewDetails }) => {
         )}
         
         <button
-          onClick={onViewDetails}
+          onClick={(e) => {
+            e.stopPropagation(); // ✅ Prevent any parent event handlers
+            console.log('View Details clicked for:', activity._id);
+            onViewDetails();
+          }}
           className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
         >
-          <FaHistory />
-          View History
+          <FaEye />
+          View Details
         </button>
       </div>
       

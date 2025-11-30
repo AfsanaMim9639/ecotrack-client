@@ -188,12 +188,7 @@ const ChallengeCard = ({ challenge }) => {
         </div>
       </div>
 
-      {/* Debug Info (Remove after testing) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-yellow-50 border-t border-yellow-200 p-2 text-xs">
-          <span className="font-semibold">Debug:</span> User: {currentUser ? '✅ Logged In' : '❌ Not Logged In'}
-        </div>
-      )}
+      
     </div>
   );
 };

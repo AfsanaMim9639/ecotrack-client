@@ -110,7 +110,7 @@ const Challenges = () => {
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Join eco-friendly challenges and make a positive impact on our planet 🌍
+              Join eco-friendly challenges and make a positive impact on our planet 
             </p>
           </div>
 

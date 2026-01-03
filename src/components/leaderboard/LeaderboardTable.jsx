@@ -1,76 +1,102 @@
 import { FaTrophy, FaMedal } from 'react-icons/fa';
+import { useTheme } from '../../context/ThemeContext';
 
 const LeaderboardTable = ({ leaderboard, currentUserId }) => {
+  const { isDark } = useTheme();
+
   const getMedalColor = (position) => {
     switch (position) {
       case 1:
-        return 'text-yellow-500'; // Gold
+        return isDark ? 'text-yellow-400' : 'text-yellow-500'; // Gold
       case 2:
-        return 'text-gray-400'; // Silver
+        return isDark ? 'text-gray-300' : 'text-gray-400'; // Silver
       case 3:
-        return 'text-orange-600'; // Bronze
+        return isDark ? 'text-orange-500' : 'text-orange-600'; // Bronze
       default:
-        return 'text-gray-600';
+        return isDark ? 'text-gray-400' : 'text-gray-600';
     }
   };
 
   const getRankBadgeColor = (rank) => {
-    const colors = {
-      'Legend': 'bg-purple-100 text-purple-800',
-      'Master': 'bg-red-100 text-red-800',
-      'Expert': 'bg-orange-100 text-orange-800',
-      'Advanced': 'bg-blue-100 text-blue-800',
-      'Intermediate': 'bg-green-100 text-green-800',
-      'Beginner': 'bg-gray-100 text-gray-800'
-    };
-    return colors[rank] || colors['Beginner'];
+    if (isDark) {
+      const darkColors = {
+        'Legend': 'bg-purple-900/30 text-purple-300 border border-purple-700',
+        'Master': 'bg-red-900/30 text-red-300 border border-red-700',
+        'Expert': 'bg-orange-900/30 text-orange-300 border border-orange-700',
+        'Advanced': 'bg-blue-900/30 text-blue-300 border border-blue-700',
+        'Intermediate': 'bg-green-900/30 text-green-300 border border-green-700',
+        'Beginner': 'bg-gray-700/30 text-gray-300 border border-gray-600'
+      };
+      return darkColors[rank] || darkColors['Beginner'];
+    } else {
+      const lightColors = {
+        'Legend': 'bg-purple-100 text-purple-800',
+        'Master': 'bg-red-100 text-red-800',
+        'Expert': 'bg-orange-100 text-orange-800',
+        'Advanced': 'bg-blue-100 text-blue-800',
+        'Intermediate': 'bg-green-100 text-green-800',
+        'Beginner': 'bg-gray-100 text-gray-800'
+      };
+      return lightColors[rank] || lightColors['Beginner'];
+    }
   };
 
   // Handle empty leaderboard
   if (!leaderboard || leaderboard.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-12 text-center">
-        <p className="text-gray-500 text-lg">No users on the leaderboard yet.</p>
-        <p className="text-gray-400 text-sm mt-2">Be the first to join challenges and earn points!</p>
+      <div className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'} rounded-lg shadow-md border p-12 text-center`}>
+        <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-lg`}>
+          No users on the leaderboard yet.
+        </p>
+        <p className={`${isDark ? 'text-gray-500' : 'text-gray-400'} text-sm mt-2`}>
+          Be the first to join challenges and earn points!
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'} rounded-lg shadow-md border overflow-hidden`}>
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className={`${isDark ? 'bg-gray-900/50 border-b border-gray-700' : 'bg-gray-50'}`}>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className={`px-6 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
                 Rank
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className={`px-6 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
                 User
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className={`px-6 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
                 Level
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className={`px-6 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
                 Points
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className={`px-6 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
                 Challenges
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className={`px-6 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
                 Streak
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className={`px-6 py-3 text-left text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
                 Badges
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className={`${isDark ? 'bg-gray-800' : 'bg-white'} divide-y ${isDark ? 'divide-gray-700' : 'divide-gray-200'}`}>
             {leaderboard.map((user) => (
               <tr
                 key={user.userId}
                 className={`
-                  ${user.userId === currentUserId ? 'bg-green-50 border-l-4 border-green-500' : 'hover:bg-gray-50'}
+                  ${user.userId === currentUserId 
+                    ? isDark 
+                      ? 'bg-green-900/20 border-l-4 border-green-500' 
+                      : 'bg-green-50 border-l-4 border-green-500'
+                    : isDark
+                      ? 'hover:bg-gray-700/50'
+                      : 'hover:bg-gray-50'
+                  }
                   transition-colors
                 `}
               >
@@ -80,7 +106,7 @@ const LeaderboardTable = ({ leaderboard, currentUserId }) => {
                     {user.position <= 3 ? (
                       <FaTrophy className={`${getMedalColor(user.position)} text-2xl`} />
                     ) : (
-                      <span className="text-gray-600 font-semibold text-lg">
+                      <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'} font-semibold text-lg`}>
                         #{user.position}
                       </span>
                     )}
@@ -93,16 +119,18 @@ const LeaderboardTable = ({ leaderboard, currentUserId }) => {
                     <img
                       src={user.photoURL}
                       alt={user.displayName}
-                      className="h-10 w-10 rounded-full"
+                      className="h-10 w-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
                       onError={(e) => {
                         e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName)}&background=22c55e&color=fff`;
                       }}
                     />
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className={`text-sm font-medium ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
                         {user.displayName}
                         {user.userId === currentUserId && (
-                          <span className="ml-2 text-xs text-green-600 font-semibold">(You)</span>
+                          <span className={`ml-2 text-xs font-semibold ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+                            (You)
+                          </span>
                         )}
                       </div>
                     </div>
@@ -118,14 +146,14 @@ const LeaderboardTable = ({ leaderboard, currentUserId }) => {
 
                 {/* Points */}
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-bold text-green-600">
+                  <div className={`text-sm font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>
                     {user.totalPoints.toLocaleString()}
                   </div>
                 </td>
 
                 {/* Challenges */}
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
+                  <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-900'}`}>
                     {user.totalChallengesCompleted} / {user.totalChallengesJoined}
                   </div>
                 </td>
@@ -134,7 +162,7 @@ const LeaderboardTable = ({ leaderboard, currentUserId }) => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-1">
                     <span className="text-orange-500">🔥</span>
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className={`text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
                       {user.currentStreak}
                     </span>
                   </div>
@@ -143,8 +171,8 @@ const LeaderboardTable = ({ leaderboard, currentUserId }) => {
                 {/* Badges */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-1">
-                    <FaMedal className="text-yellow-500" />
-                    <span className="text-sm font-semibold text-gray-900">
+                    <FaMedal className={`${isDark ? 'text-yellow-400' : 'text-yellow-500'}`} />
+                    <span className={`text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
                       {user.badgeCount}
                     </span>
                   </div>

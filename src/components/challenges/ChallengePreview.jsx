@@ -2,45 +2,47 @@
 import { Link } from 'react-router-dom';
 import { FaUsers, FaClock, FaTrophy } from 'react-icons/fa';
 import { useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
 const ChallengePreview = ({ challenge }) => {
+  const { isDark } = useTheme();
   const [imageError, setImageError] = useState(false);
 
   const categoryConfig = {
     'Energy Conservation': { 
-      gradient: 'from-blue-500 to-blue-600',
+      gradient: isDark ? 'from-blue-600 to-blue-700' : 'from-blue-500 to-blue-600',
       icon: '⚡',
-      lightBg: 'bg-blue-50'
+      lightBg: isDark ? 'bg-blue-900/20' : 'bg-blue-50'
     },
     'Water Conservation': { 
-      gradient: 'from-cyan-500 to-cyan-600',
+      gradient: isDark ? 'from-cyan-600 to-cyan-700' : 'from-cyan-500 to-cyan-600',
       icon: '💧',
-      lightBg: 'bg-cyan-50'
+      lightBg: isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'
     },
     'Waste Reduction': { 
-      gradient: 'from-orange-500 to-orange-600',
+      gradient: isDark ? 'from-orange-600 to-orange-700' : 'from-orange-500 to-orange-600',
       icon: '♻️',
-      lightBg: 'bg-orange-50'
+      lightBg: isDark ? 'bg-orange-900/20' : 'bg-orange-50'
     },
     'Sustainable Transport': { 
-      gradient: 'from-purple-500 to-purple-600',
+      gradient: isDark ? 'from-purple-600 to-purple-700' : 'from-purple-500 to-purple-600',
       icon: '🚴',
-      lightBg: 'bg-purple-50'
+      lightBg: isDark ? 'bg-purple-900/20' : 'bg-purple-50'
     },
     'Green Living': { 
-      gradient: 'from-green-500 to-green-600',
+      gradient: isDark ? 'from-green-600 to-green-700' : 'from-green-500 to-green-600',
       icon: '🌿',
-      lightBg: 'bg-green-50'
+      lightBg: isDark ? 'bg-green-900/20' : 'bg-green-50'
     },
     'Sustainable Living': { 
-      gradient: 'from-emerald-500 to-emerald-600',
+      gradient: isDark ? 'from-emerald-600 to-emerald-700' : 'from-emerald-500 to-emerald-600',
       icon: '🌍',
-      lightBg: 'bg-emerald-50'
+      lightBg: isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'
     },
     Other: { 
-      gradient: 'from-gray-500 to-gray-600',
+      gradient: isDark ? 'from-gray-600 to-gray-700' : 'from-gray-500 to-gray-600',
       icon: '🎯',
-      lightBg: 'bg-gray-50'
+      lightBg: isDark ? 'bg-gray-800/20' : 'bg-gray-50'
     }
   };
 
@@ -48,9 +50,9 @@ const ChallengePreview = ({ challenge }) => {
 
   return (
     <Link to={`/challenges/${challenge._id}`}>
-      <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 h-full">
+      <div className={`group relative ${isDark ? 'bg-gray-800 border-gray-700 shadow-gray-900/50 hover:shadow-gray-900/70' : 'bg-white border-gray-100 shadow-lg hover:shadow-2xl'} rounded-2xl transition-all duration-500 overflow-hidden border h-full`}>
         {/* Image Section */}
-        <div className="relative h-48 overflow-hidden">
+        <div className={`relative h-48 overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
           {!imageError && challenge.imageUrl ? (
             <img
               src={challenge.imageUrl}
@@ -65,7 +67,7 @@ const ChallengePreview = ({ challenge }) => {
           )}
           
           {/* Gradient Overlay on Hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black/80 via-black/40' : 'from-black/60 via-black/20'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
           
           {/* Category Badge */}
           <div className={`absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-gradient-to-r ${categoryInfo.gradient} text-white text-xs font-bold shadow-lg flex items-center gap-1.5`}>
@@ -77,28 +79,28 @@ const ChallengePreview = ({ challenge }) => {
         {/* Content Section */}
         <div className="p-5">
           {/* Title */}
-          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-green-600 transition-colors duration-300">
+          <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100 group-hover:text-green-400' : 'text-gray-900 group-hover:text-green-600'} mb-2 line-clamp-2 min-h-[3rem] transition-colors duration-300`}>
             {challenge.title}
           </h3>
 
           {/* Description */}
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+          <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-sm mb-4 line-clamp-2 leading-relaxed`}>
             {challenge.description}
           </p>
 
           {/* Metrics */}
           <div className="flex items-center justify-between gap-2 text-sm">
-            <div className="flex items-center gap-1.5 text-gray-700">
-              <FaUsers className="text-green-600" />
+            <div className={`flex items-center gap-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              <FaUsers className={`${isDark ? 'text-green-400' : 'text-green-600'}`} />
               <span className="font-semibold">{challenge.participants || 0}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-gray-700">
-              <FaClock className="text-blue-600" />
+            <div className={`flex items-center gap-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              <FaClock className={`${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
               <span className="font-semibold">{challenge.duration || 30}d</span>
             </div>
             {challenge.points && (
-              <div className="flex items-center gap-1.5 text-gray-700">
-                <FaTrophy className="text-yellow-600" />
+              <div className={`flex items-center gap-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <FaTrophy className={`${isDark ? 'text-yellow-400' : 'text-yellow-600'}`} />
                 <span className="font-semibold">{challenge.points}pts</span>
               </div>
             )}

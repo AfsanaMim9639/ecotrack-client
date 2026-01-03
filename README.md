@@ -1,6 +1,6 @@
 # 🌍 EcoTrack - Sustainable Living Challenge Platform
 
-**Live Site:** [https://ecotrack-71dcf.web.app/challenges](https://ecotrack-71dcf.web.app/challenges)
+**Live Site:** [https://ecotrack-71dcf.web.app](https://ecotrack-71dcf.web.app)
 
 ## 📖 Overview
 

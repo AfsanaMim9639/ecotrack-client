@@ -12,6 +12,11 @@ import MyActivities from '../pages/MyActivities';
 import ActivityDetail from '../pages/ActivityDetail';
 import Leaderboard from '../pages/Leaderboard'; // ✅ NEW
 import NotFound from '../pages/NotFound';
+import Profile from '../pages/Profile';
+import About from '../pages/About';
+import Contact from '../pages/Contact';
+import Help from '../pages/Help';
+import PrivacyTerms from '../pages/PrivacyTerms';
 
 const AppRoutes = () => {
   return (
@@ -24,7 +29,11 @@ const AppRoutes = () => {
       <Route path="/challenges" element={<Challenges />} />
       <Route path="/challenges/:id" element={<ChallengeDetails />} />
       <Route path="/leaderboard" element={<Leaderboard />} /> {/* ✅ NEW */}
-
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/help" element={<Help />} />
+      <Route path="/privacy" element={<PrivacyTerms />} />
       {/* Protected Routes */}
       <Route
         path="/challenges/add"

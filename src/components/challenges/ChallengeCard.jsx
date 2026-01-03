@@ -1,8 +1,7 @@
-
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';  
+import { useTheme } from '../../context/ThemeContext'; // Import করতে হবে
 import { FaUsers, FaClock, FaTrophy } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';
@@ -10,33 +9,38 @@ import api from '../../services/api';
 const ChallengeCard = ({ challenge }) => {  
   const navigate = useNavigate();
   const { currentUser } = useAuth();  
+  const { isDark } = useTheme(); // Theme hook use করুন
   const [isJoining, setIsJoining] = useState(false);
 
   const difficultyColors = {
-    Easy: 'bg-green-100 text-green-800',
-    Medium: 'bg-yellow-100 text-yellow-800',
-    Hard: 'bg-red-100 text-red-800'
+    Easy: isDark 
+      ? 'bg-green-900/30 text-green-300 border border-green-700'
+      : 'bg-green-100 text-green-800',
+    Medium: isDark
+      ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-700'
+      : 'bg-yellow-100 text-yellow-800',
+    Hard: isDark
+      ? 'bg-red-900/30 text-red-300 border border-red-700'
+      : 'bg-red-100 text-red-800'
   };
 
   const categoryColors = {
-    'Energy Conservation': 'bg-blue-500',
-    'Water Conservation': 'bg-cyan-500',
-    'Waste Reduction': 'bg-orange-500',
-    'Sustainable Transport': 'bg-purple-500',
-    'Green Living': 'bg-green-500',
-    'Sustainable Living': 'bg-emerald-500',
-    Other: 'bg-gray-500'
+    'Energy Conservation': isDark ? 'bg-blue-600' : 'bg-blue-500',
+    'Water Conservation': isDark ? 'bg-cyan-600' : 'bg-cyan-500',
+    'Waste Reduction': isDark ? 'bg-orange-600' : 'bg-orange-500',
+    'Sustainable Transport': isDark ? 'bg-purple-600' : 'bg-purple-500',
+    'Green Living': isDark ? 'bg-green-600' : 'bg-green-500',
+    'Sustainable Living': isDark ? 'bg-emerald-600' : 'bg-emerald-500',
+    Other: isDark ? 'bg-gray-600' : 'bg-gray-500'
   };
 
   const handleJoinChallenge = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // ✅ Debug log
     console.log('🔍 Current User:', currentUser);
     console.log('🔍 Challenge:', challenge);
 
-    // Check if user is logged in
     if (!currentUser) {
       console.log('❌ No user logged in');
       toast.error('Please login to join challenges');
@@ -44,7 +48,6 @@ const ChallengeCard = ({ challenge }) => {
       return;
     }
 
-    // Validate challenge data
     if (!challenge || !challenge._id) {
       console.log('❌ Invalid challenge data');
       toast.error('Invalid challenge data');
@@ -61,16 +64,11 @@ const ChallengeCard = ({ challenge }) => {
         challengeId: challenge._id
       };
 
-      
-
-      // Join challenge API call
       const response = await api.post('/user-challenges/join', joinData);
 
-      
       if (response.data.success) {
         toast.success('🎉 Successfully joined the challenge!');
         
-        // Navigate to My Activities page
         setTimeout(() => {
           navigate('/my-activities');
         }, 1000);
@@ -82,7 +80,6 @@ const ChallengeCard = ({ challenge }) => {
       console.error('❌ Error joining challenge:', error);
       console.error('❌ Error response:', error.response?.data);
       
-      // Detailed error handling
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else if (error.response?.status === 400) {
@@ -100,9 +97,9 @@ const ChallengeCard = ({ challenge }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+    <div className={`${isDark ? 'bg-gray-800 border-gray-700 shadow-gray-900/50 hover:shadow-gray-900/70' : 'bg-white border-gray-100 shadow-md hover:shadow-xl'} rounded-lg border transition-all duration-300 overflow-hidden group`}>
       {/* Image */}
-      <div className="relative h-48 overflow-hidden">
+      <div className={`relative h-48 overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
         <img
           src={challenge.imageUrl || 'https://via.placeholder.com/400x300?text=Challenge'}
           alt={challenge.title}
@@ -111,7 +108,7 @@ const ChallengeCard = ({ challenge }) => {
             e.target.src = 'https://via.placeholder.com/400x300?text=Challenge';
           }}
         />
-        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-white text-sm font-semibold ${
+        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-white text-sm font-semibold shadow-lg ${
           categoryColors[challenge.category] || categoryColors.Other
         }`}>
           {challenge.category}
@@ -120,26 +117,26 @@ const ChallengeCard = ({ challenge }) => {
 
       {/* Content */}
       <div className="p-5">
-        <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
+        <h3 className={`text-xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'} mb-2 line-clamp-2`}>
           {challenge.title}
         </h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-sm mb-4 line-clamp-2`}>
           {challenge.description}
         </p>
 
         {/* Stats */}
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+        <div className={`flex items-center gap-4 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
           <div className="flex items-center gap-1">
-            <FaUsers className="text-green-600" />
+            <FaUsers className={`${isDark ? 'text-green-400' : 'text-green-600'}`} />
             <span>{challenge.participants || 0}</span>
           </div>
           <div className="flex items-center gap-1">
-            <FaClock className="text-blue-600" />
+            <FaClock className={`${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
             <span>{challenge.duration || 30} days</span>
           </div>
           {challenge.points && (
             <div className="flex items-center gap-1">
-              <FaTrophy className="text-yellow-600" />
+              <FaTrophy className={`${isDark ? 'text-yellow-400' : 'text-yellow-600'}`} />
               <span>{challenge.points} pts</span>
             </div>
           )}
@@ -158,7 +155,7 @@ const ChallengeCard = ({ challenge }) => {
           <div className="flex gap-2 ml-auto">
             <Link
               to={`/challenges/${challenge._id}`}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-700 transition"
+              className={`${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-600 hover:bg-gray-700'} text-white px-4 py-2 rounded-lg text-sm font-semibold transition`}
             >
               Details
             </Link>
@@ -168,8 +165,8 @@ const ChallengeCard = ({ challenge }) => {
               disabled={isJoining}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
                 isJoining
-                  ? 'bg-green-400 text-white cursor-wait'
-                  : 'bg-green-600 text-white hover:bg-green-700'
+                  ? isDark ? 'bg-green-500 text-white cursor-wait opacity-75' : 'bg-green-400 text-white cursor-wait'
+                  : isDark ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'
               }`}
             >
               {isJoining ? (
@@ -187,11 +184,8 @@ const ChallengeCard = ({ challenge }) => {
           </div>
         </div>
       </div>
-
-      
     </div>
   );
 };
 
 export default ChallengeCard;
-

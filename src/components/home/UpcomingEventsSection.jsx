@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { 
   FaCalendarAlt, 
   FaLaptop, 
@@ -16,6 +17,7 @@ import {
 } from 'react-icons/fa';
 
 const UpcomingEventsSection = () => {
+  const { isDark } = useTheme();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +28,6 @@ const UpcomingEventsSection = () => {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      // Simulated data for demo
       const mockEvents = [
         {
           _id: '1',
@@ -127,16 +128,16 @@ const UpcomingEventsSection = () => {
           }}
         ></div>
         
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/75 via-emerald-900/70 to-teal-900/75"></div>
+        <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-green-950/85 via-emerald-950/80 to-teal-950/85' : 'bg-gradient-to-br from-green-900/75 via-emerald-900/70 to-teal-900/75'}`}></div>
         
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-40 h-40 bg-green-400/20 rounded-full blur-3xl animate-float-diagonal"></div>
-          <div className="absolute bottom-32 right-20 w-48 h-48 bg-emerald-300/20 rounded-full blur-3xl animate-float-reverse animation-delay-2000"></div>
-          <div className="absolute top-1/2 left-1/3 w-36 h-36 bg-teal-300/20 rounded-full blur-3xl animate-float-diagonal animation-delay-4000"></div>
-          <div className="absolute bottom-20 left-1/4 w-32 h-32 bg-lime-300/20 rounded-full blur-3xl animate-float-reverse animation-delay-3000"></div>
+          <div className={`absolute top-20 left-10 w-40 h-40 ${isDark ? 'bg-green-400/25' : 'bg-green-400/20'} rounded-full blur-3xl animate-float-diagonal`}></div>
+          <div className={`absolute bottom-32 right-20 w-48 h-48 ${isDark ? 'bg-emerald-300/25' : 'bg-emerald-300/20'} rounded-full blur-3xl animate-float-reverse animation-delay-2000`}></div>
+          <div className={`absolute top-1/2 left-1/3 w-36 h-36 ${isDark ? 'bg-teal-300/25' : 'bg-teal-300/20'} rounded-full blur-3xl animate-float-diagonal animation-delay-4000`}></div>
+          <div className={`absolute bottom-20 left-1/4 w-32 h-32 ${isDark ? 'bg-lime-300/25' : 'bg-lime-300/20'} rounded-full blur-3xl animate-float-reverse animation-delay-3000`}></div>
         </div>
 
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div className={`absolute inset-0 overflow-hidden pointer-events-none ${isDark ? 'opacity-20' : 'opacity-30'}`}>
           <div 
             className="absolute inset-0"
             style={{
@@ -147,16 +148,16 @@ const UpcomingEventsSection = () => {
           ></div>
         </div>
 
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-15">
+        <div className={`absolute inset-0 overflow-hidden pointer-events-none ${isDark ? 'opacity-10' : 'opacity-15'}`}>
           <div className="absolute top-0 left-1/4 w-32 h-full bg-gradient-to-b from-white/40 via-transparent to-transparent transform -skew-x-12 animate-beam-slow"></div>
           <div className="absolute top-0 right-1/3 w-24 h-full bg-gradient-to-b from-white/30 via-transparent to-transparent transform skew-x-12 animate-beam-slow animation-delay-3000"></div>
         </div>
 
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-green-200 rounded-full animate-twinkle"></div>
-          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-emerald-200 rounded-full animate-twinkle animation-delay-1000"></div>
-          <div className="absolute bottom-1/3 left-2/3 w-1 h-1 bg-teal-200 rounded-full animate-twinkle animation-delay-2000"></div>
-          <div className="absolute top-2/3 right-1/3 w-1 h-1 bg-lime-200 rounded-full animate-twinkle animation-delay-3000"></div>
+          <div className={`absolute top-1/4 left-1/5 w-1 h-1 ${isDark ? 'bg-green-300' : 'bg-green-200'} rounded-full animate-twinkle`}></div>
+          <div className={`absolute top-1/3 right-1/4 w-1 h-1 ${isDark ? 'bg-emerald-300' : 'bg-emerald-200'} rounded-full animate-twinkle animation-delay-1000`}></div>
+          <div className={`absolute bottom-1/3 left-2/3 w-1 h-1 ${isDark ? 'bg-teal-300' : 'bg-teal-200'} rounded-full animate-twinkle animation-delay-2000`}></div>
+          <div className={`absolute top-2/3 right-1/3 w-1 h-1 ${isDark ? 'bg-lime-300' : 'bg-lime-200'} rounded-full animate-twinkle animation-delay-3000`}></div>
         </div>
       </div>
 
@@ -164,8 +165,8 @@ const UpcomingEventsSection = () => {
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-6 py-2 rounded-full mb-4 border border-white/20">
-            <FaCalendarAlt className="text-green-300" />
+          <div className={`inline-flex items-center gap-2 ${isDark ? 'bg-white/10 border-white/30' : 'bg-white/15 border-white/20'} backdrop-blur-md px-6 py-2 rounded-full mb-4 border`}>
+            <FaCalendarAlt className={`${isDark ? 'text-green-400' : 'text-green-300'}`} />
             <span className="text-white font-semibold text-sm uppercase tracking-wider">
               Community Events
             </span>
@@ -173,7 +174,7 @@ const UpcomingEventsSection = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-2xl">
             📅 Upcoming Events
           </h2>
-          <p className="text-white/95 text-lg max-w-2xl mx-auto drop-shadow-lg">
+          <p className={`${isDark ? 'text-white/90' : 'text-white/95'} text-lg max-w-2xl mx-auto drop-shadow-lg`}>
             Join community events and make a difference together
           </p>
         </div>
@@ -193,14 +194,15 @@ const UpcomingEventsSection = () => {
                 key={event._id || event.id || `event-${index}`} 
                 event={event}
                 index={index}
+                isDark={isDark}
               />  
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20">
+          <div className={`text-center py-16 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/10 border-white/20'} backdrop-blur-lg rounded-3xl shadow-2xl border`}>
             <div className="text-6xl mb-4">📅</div>
             <p className="text-white text-2xl font-semibold mb-2">No upcoming events</p>
-            <p className="text-white/80 text-lg">Check back soon for community events!</p>
+            <p className={`${isDark ? 'text-white/70' : 'text-white/80'} text-lg`}>Check back soon for community events!</p>
           </div>
         )}
       </div>
@@ -295,7 +297,7 @@ const UpcomingEventsSection = () => {
   );
 };
 
-const EventCard = ({ event, index }) => {
+const EventCard = ({ event, index, isDark }) => {
   if (!event) return null;
 
   const IMAGES = [
@@ -308,12 +310,17 @@ const EventCard = ({ event, index }) => {
   ];
 
   const getLocationIcon = (type) => {
+    const iconColor = isDark ? 'text-blue-400' : 'text-blue-600';
+    const redColor = isDark ? 'text-red-400' : 'text-red-600';
+    const purpleColor = isDark ? 'text-purple-400' : 'text-purple-600';
+    const grayColor = isDark ? 'text-gray-400' : 'text-gray-600';
+    
     const icons = {
-      Online: <FaLaptop className="text-blue-600" />,
-      Physical: <FaMapMarkerAlt className="text-red-600" />,
-      Hybrid: <FaGlobeAmericas className="text-purple-600" />
+      Online: <FaLaptop className={iconColor} />,
+      Physical: <FaMapMarkerAlt className={redColor} />,
+      Hybrid: <FaGlobeAmericas className={purpleColor} />
     };
-    return icons[type] || <FaMapMarkerAlt className="text-gray-600" />;
+    return icons[type] || <FaMapMarkerAlt className={grayColor} />;
   };
 
   const getCategoryConfig = (category) => {
@@ -372,8 +379,8 @@ const EventCard = ({ event, index }) => {
   const eventImage = IMAGES[index % IMAGES.length];
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col">
-      <div className="relative h-48 overflow-hidden flex-shrink-0 bg-gray-100">
+    <div className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col border`}>
+      <div className={`relative h-48 overflow-hidden flex-shrink-0 ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
         <img 
           src={eventImage}
           alt={event.title || 'Event'}
@@ -401,30 +408,30 @@ const EventCard = ({ event, index }) => {
       </div>
 
       <div className="p-5 flex-grow flex flex-col">
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-green-600 transition-colors">
+        <h3 className={`text-lg font-bold ${isDark ? 'text-white group-hover:text-green-400' : 'text-gray-900 group-hover:text-green-600'} mb-2 line-clamp-2 min-h-[3rem] transition-colors`}>
           {event.title || 'Untitled Event'}
         </h3>
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-grow">
+        <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 line-clamp-2 leading-relaxed flex-grow`}>
           {event.description || 'No description available'}
         </p>
 
-        <div className="flex items-center gap-2 text-sm text-gray-700 mb-2">
-          <FaClock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+        <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+          <FaClock className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-600'} flex-shrink-0`} />
           <span className="font-medium">{formatDate(event.eventDate || event.date)}</span>
           {event.eventTime && (
             <>
-              <span className="text-gray-400">•</span>
-              <span className="text-gray-600">{event.eventTime}</span>
+              <span className={`${isDark ? 'text-gray-600' : 'text-gray-400'}`}>•</span>
+              <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{event.eventTime}</span>
             </>
           )}
         </div>
 
         {event.location && (
-          <div className="flex items-center gap-2 text-sm text-gray-700 mb-4">
+          <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
             {typeof event.location === 'string' ? (
               <>
-                <FaMapMarkerAlt className="w-4 h-4 text-red-600 flex-shrink-0" />
+                <FaMapMarkerAlt className={`w-4 h-4 ${isDark ? 'text-red-400' : 'text-red-600'} flex-shrink-0`} />
                 <span className="font-medium truncate">{event.location}</span>
               </>
             ) : (
@@ -436,21 +443,21 @@ const EventCard = ({ event, index }) => {
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+        <div className={`flex items-center justify-between pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-100'} mt-auto`}>
           <div className="flex items-center gap-2">
-            <FaUsers className="w-4 h-4 text-green-600" />
+            <FaUsers className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
             <div className="text-sm">
-              <span className="font-bold text-gray-900">
+              <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 {event.registeredCount || event.currentParticipants || 0}
               </span>
-              <span className="text-gray-500">/{event.capacity || event.maxParticipants || 0}</span>
+              <span className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>/{event.capacity || event.maxParticipants || 0}</span>
             </div>
           </div>
           
           {event.points && (
-            <div className="flex items-center gap-1 bg-green-50 px-3 py-1.5 rounded-lg">
-              <FaTrophy className="w-3 h-3 text-yellow-600" />
-              <span className="text-sm font-bold text-green-700">+{event.points}</span>
+            <div className={`flex items-center gap-1 ${isDark ? 'bg-green-900/30' : 'bg-green-50'} px-3 py-1.5 rounded-lg`}>
+              <FaTrophy className={`w-3 h-3 ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`} />
+              <span className={`text-sm font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>+{event.points}</span>
             </div>
           )}
         </div>

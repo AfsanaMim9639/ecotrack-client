@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import leaderboardService from '../services/leaderboardService';
 import LeaderboardTable from '../components/leaderboard/LeaderboardTable';
 import toast from 'react-hot-toast';
 import { FaTrophy, FaFire, FaChartLine } from 'react-icons/fa';
 
 const Leaderboard = () => {
-  const { currentUser, user } = useAuth(); // Add 'user' from context
+  const { currentUser, user } = useAuth();
+  const { isDark } = useTheme();
   const [leaderboard, setLeaderboard] = useState([]);
   const [myRank, setMyRank] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -46,7 +48,6 @@ const Leaderboard = () => {
     } catch (error) {
       console.error('Error fetching rank:', error);
       
-      // Set default rank data if error
       setMyRank({
         position: 0,
         totalPoints: 0,
@@ -56,7 +57,6 @@ const Leaderboard = () => {
         percentile: 100
       });
       
-      // Only show error if not 404
       if (error.response?.status !== 404) {
         toast.error('Failed to load your rank');
       }
@@ -64,22 +64,22 @@ const Leaderboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'} py-8`}>
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
-            <FaTrophy className="text-yellow-500" />
+          <h1 className={`text-4xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'} mb-4 flex items-center justify-center gap-3`}>
+            <FaTrophy className={`${isDark ? 'text-yellow-400' : 'text-yellow-500'}`} />
             Community Leaderboard
           </h1>
-          <p className="text-gray-600">
+          <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             See how you rank among other eco-warriors!
           </p>
         </div>
 
         {/* My Rank Card */}
         {currentUser && myRank && (
-          <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-lg shadow-lg p-6 mb-8 text-white">
+          <div className={`${isDark ? 'bg-gradient-to-r from-green-600 to-teal-700' : 'bg-gradient-to-r from-green-500 to-teal-600'} rounded-lg shadow-lg p-6 mb-8 text-white`}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-3xl font-bold">
@@ -101,7 +101,7 @@ const Leaderboard = () => {
               </div>
             </div>
             <div className="mt-4 text-center">
-              <div className="inline-block bg-white bg-opacity-20 px-4 py-2 rounded-full">
+              <div className={`inline-block ${isDark ? 'bg-white/30' : 'bg-white/20'} px-4 py-2 rounded-full`}>
                 <span className="font-semibold">{myRank.rank || 'Beginner'}</span>
                 {myRank.position > 0 && (
                   <span className="ml-2">• Top {myRank.percentile || 100}%</span>
@@ -119,14 +119,18 @@ const Leaderboard = () => {
         )}
 
         {/* Filter Tabs */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div className={`${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'} rounded-lg shadow-md p-4 mb-6`}>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilterType('points')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition ${
                 filterType === 'points'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? isDark 
+                    ? 'bg-green-600 text-white' 
+                    : 'bg-green-600 text-white'
+                  : isDark
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               <FaTrophy />
@@ -136,8 +140,12 @@ const Leaderboard = () => {
               onClick={() => setFilterType('challenges')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition ${
                 filterType === 'challenges'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? isDark 
+                    ? 'bg-green-600 text-white' 
+                    : 'bg-green-600 text-white'
+                  : isDark
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               <FaChartLine />
@@ -147,8 +155,12 @@ const Leaderboard = () => {
               onClick={() => setFilterType('streak')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition ${
                 filterType === 'streak'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? isDark 
+                    ? 'bg-green-600 text-white' 
+                    : 'bg-green-600 text-white'
+                  : isDark
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               <FaFire />
@@ -160,8 +172,8 @@ const Leaderboard = () => {
         {/* Leaderboard Table */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-            <p className="text-gray-600 mt-4">Loading leaderboard...</p>
+            <div className={`inline-block animate-spin rounded-full h-12 w-12 border-b-2 ${isDark ? 'border-green-400' : 'border-green-600'}`}></div>
+            <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} mt-4`}>Loading leaderboard...</p>
           </div>
         ) : leaderboard && leaderboard.length > 0 ? (
           <LeaderboardTable
@@ -169,9 +181,9 @@ const Leaderboard = () => {
             currentUserId={currentUser?.uid}
           />
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-600 text-lg">No data available</p>
-            <p className="text-gray-500 text-sm mt-2">Complete challenges to appear on the leaderboard!</p>
+          <div className={`text-center py-12 ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'} rounded-lg shadow`}>
+            <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-lg`}>No data available</p>
+            <p className={`${isDark ? 'text-gray-500' : 'text-gray-500'} text-sm mt-2`}>Complete challenges to appear on the leaderboard!</p>
           </div>
         )}
       </div>

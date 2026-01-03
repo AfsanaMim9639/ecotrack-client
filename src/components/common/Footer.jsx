@@ -1,23 +1,25 @@
 import { Link } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import { FaLeaf, FaFacebook, FaInstagram, FaLinkedin, FaGithub, FaHeart, FaShieldAlt, FaUniversalAccess } from 'react-icons/fa';
 
 const Footer = () => {
+  const { isDark } = useTheme();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-to-br from-green-900/95 via-emerald-900/90 to-teal-900/95 text-white overflow-hidden">
+    <footer className={`relative ${isDark ? 'bg-gradient-to-br from-gray-950/98 via-gray-900/95 to-gray-950/98' : 'bg-gradient-to-br from-green-900/95 via-emerald-900/90 to-teal-900/95'} text-white overflow-hidden transition-colors duration-300`}>
       {/* Animated Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
+      <div className={`absolute inset-0 ${isDark ? 'opacity-5' : 'opacity-10'}`}>
         <div className="absolute inset-0 animate-float-slow">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-emerald-400 rounded-full blur-3xl"></div>
-          <div className="absolute top-40 right-20 w-40 h-40 bg-green-300 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-1/3 w-36 h-36 bg-teal-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-1/4 w-28 h-28 bg-emerald-400 rounded-full blur-3xl"></div>
+          <div className={`absolute top-10 left-10 w-32 h-32 ${isDark ? 'bg-emerald-500' : 'bg-emerald-400'} rounded-full blur-3xl`}></div>
+          <div className={`absolute top-40 right-20 w-40 h-40 ${isDark ? 'bg-green-400' : 'bg-green-300'} rounded-full blur-3xl`}></div>
+          <div className={`absolute bottom-20 left-1/3 w-36 h-36 ${isDark ? 'bg-teal-600' : 'bg-teal-500'} rounded-full blur-3xl`}></div>
+          <div className={`absolute bottom-10 right-1/4 w-28 h-28 ${isDark ? 'bg-emerald-500' : 'bg-emerald-400'} rounded-full blur-3xl`}></div>
         </div>
       </div>
 
       {/* Animated Leaf Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      <div className={`absolute inset-0 ${isDark ? 'opacity-3' : 'opacity-5'}`}>
         <div className="absolute top-20 left-1/4 animate-float">
           <FaLeaf className="text-6xl text-white transform rotate-45" />
         </div>
@@ -38,13 +40,13 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-2xl font-bold">
-              <FaLeaf className="animate-pulse text-green-300" />
+              <FaLeaf className={`animate-pulse ${isDark ? 'text-green-400' : 'text-green-300'}`} />
               <span>EcoTrack</span>
             </div>
-            <p className="text-green-50/90 text-sm leading-relaxed">
+            <p className={`${isDark ? 'text-gray-300' : 'text-green-50/90'} text-sm leading-relaxed`}>
               Empowering individuals to make a positive environmental impact through sustainable challenges and community action.
             </p>
-            <div className="flex items-center gap-2 text-green-100/80 text-sm">
+            <div className={`flex items-center gap-2 ${isDark ? 'text-gray-400' : 'text-green-100/80'} text-sm`}>
               <FaHeart className="text-red-400 animate-pulse" />
               <span>Building a greener future together</span>
             </div>
@@ -52,34 +54,34 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-green-50">Quick Links</h3>
+            <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-green-50'}`}>Quick Links</h3>
             <div className="flex flex-col gap-2">
               <Link 
                 to="/about" 
-                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-green-100/80 hover:text-white'} hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group`}
               >
-                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
+                <span className={`w-1 h-1 ${isDark ? 'bg-green-400' : 'bg-green-300'} rounded-full group-hover:w-2 transition-all`}></span>
                 About Us
               </Link>
               <Link 
                 to="/contact" 
-                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-green-100/80 hover:text-white'} hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group`}
               >
-                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
+                <span className={`w-1 h-1 ${isDark ? 'bg-green-400' : 'bg-green-300'} rounded-full group-hover:w-2 transition-all`}></span>
                 Contact
               </Link>
               <Link 
                 to="/challenges" 
-                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-green-100/80 hover:text-white'} hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group`}
               >
-                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
+                <span className={`w-1 h-1 ${isDark ? 'bg-green-400' : 'bg-green-300'} rounded-full group-hover:w-2 transition-all`}></span>
                 Challenges
               </Link>
               <Link 
                 to="/leaderboard" 
-                className="text-green-100/80 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group"
+                className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-green-100/80 hover:text-white'} hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2 group`}
               >
-                <span className="w-1 h-1 bg-green-300 rounded-full group-hover:w-2 transition-all"></span>
+                <span className={`w-1 h-1 ${isDark ? 'bg-green-400' : 'bg-green-300'} rounded-full group-hover:w-2 transition-all`}></span>
                 Leaderboard
               </Link>
             </div>
@@ -87,8 +89,8 @@ const Footer = () => {
 
           {/* Social Media & Contact */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-green-50">Connect With Us</h3>
-            <p className="text-green-100/80 text-sm">
+            <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-green-50'}`}>Connect With Us</h3>
+            <p className={`${isDark ? 'text-gray-400' : 'text-green-100/80'} text-sm`}>
               Follow us on social media for daily eco-tips and updates!
             </p>
             <div className="flex gap-4">
@@ -96,7 +98,7 @@ const Footer = () => {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-800/60 hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
+                className={`w-10 h-10 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-green-800/60 border-green-700/50'} hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border`}
               >
                 <FaFacebook className="text-xl" />
               </a>
@@ -104,7 +106,7 @@ const Footer = () => {
                 href="https://x.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-800/60 hover:bg-black rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
+                className={`w-10 h-10 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-green-800/60 border-green-700/50'} hover:bg-black rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border`}
                 aria-label="Follow us on X (Twitter)"
               >
                 <svg 
@@ -119,7 +121,7 @@ const Footer = () => {
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-800/60 hover:bg-pink-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
+                className={`w-10 h-10 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-green-800/60 border-green-700/50'} hover:bg-pink-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border`}
               >
                 <FaInstagram className="text-xl" />
               </a>
@@ -127,7 +129,7 @@ const Footer = () => {
                 href="https://linkedin.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-800/60 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
+                className={`w-10 h-10 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-green-800/60 border-green-700/50'} hover:bg-blue-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border`}
               >
                 <FaLinkedin className="text-xl" />
               </a>
@@ -135,7 +137,7 @@ const Footer = () => {
                 href="https://github.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-green-800/60 hover:bg-gray-800 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border border-green-700/50"
+                className={`w-10 h-10 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-green-800/60 border-green-700/50'} hover:bg-gray-800 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg border`}
               >
                 <FaGithub className="text-xl" />
               </a>
@@ -144,10 +146,10 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-green-700/50 my-8"></div>
+        <div className={`border-t ${isDark ? 'border-gray-800' : 'border-green-700/50'} my-8`}></div>
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-green-100/70">
+        <div className={`flex flex-col md:flex-row justify-between items-center gap-4 text-sm ${isDark ? 'text-gray-500' : 'text-green-100/70'}`}>
           <div className="flex items-center gap-2">
             <span>© {currentYear} EcoTrack.</span>
             <span>All rights reserved.</span>
@@ -157,23 +159,23 @@ const Footer = () => {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link 
               to="/privacy" 
-              className="flex items-center gap-1 hover:text-white transition-colors"
+              className={`flex items-center gap-1 ${isDark ? 'hover:text-gray-300' : 'hover:text-white'} transition-colors`}
             >
               <FaShieldAlt className="text-xs" />
               <span>Privacy Policy</span>
             </Link>
-            <span className="text-green-700/60">|</span>
+            <span className={`${isDark ? 'text-gray-800' : 'text-green-700/60'}`}>|</span>
             <Link 
               to="/accessibility" 
-              className="flex items-center gap-1 hover:text-white transition-colors"
+              className={`flex items-center gap-1 ${isDark ? 'hover:text-gray-300' : 'hover:text-white'} transition-colors`}
             >
               <FaUniversalAccess className="text-xs" />
               <span>Accessibility</span>
             </Link>
-            <span className="text-green-700/60">|</span>
+            <span className={`${isDark ? 'text-gray-800' : 'text-green-700/60'}`}>|</span>
             <Link 
               to="/terms" 
-              className="hover:text-white transition-colors"
+              className={`${isDark ? 'hover:text-gray-300' : 'hover:text-white'} transition-colors`}
             >
               Terms of Service
             </Link>
@@ -181,17 +183,17 @@ const Footer = () => {
         </div>
 
         {/* Additional Accessibility Note */}
-        <div className="mt-6 pt-6 border-t border-green-700/30 text-center">
-          <p className="text-xs text-green-200/70 leading-relaxed max-w-3xl mx-auto">
+        <div className={`mt-6 pt-6 border-t ${isDark ? 'border-gray-800' : 'border-green-700/30'} text-center`}>
+          <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-green-200/70'} leading-relaxed max-w-3xl mx-auto`}>
             <FaUniversalAccess className="inline mr-1" />
             We're committed to making EcoTrack accessible to everyone. If you experience any accessibility issues, 
-            please contact us at <a href="mailto:accessibility@ecotrack.com" className="underline hover:text-white">accessibility@ecotrack.com</a>
+            please contact us at <a href="mailto:accessibility@ecotrack.com" className={`underline ${isDark ? 'hover:text-gray-400' : 'hover:text-white'}`}>accessibility@ecotrack.com</a>
           </p>
         </div>
       </div>
 
       {/* Wave Animation at Top */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-green-500 to-teal-400 animate-wave"></div>
+      <div className={`absolute top-0 left-0 right-0 h-1 ${isDark ? 'bg-gradient-to-r from-emerald-500 via-green-600 to-teal-500' : 'bg-gradient-to-r from-emerald-400 via-green-500 to-teal-400'} animate-wave`}></div>
 
       <style>{`
         @keyframes float {
@@ -248,6 +250,10 @@ const Footer = () => {
         .animate-wave {
           background-size: 200% 200%;
           animation: wave 3s ease-in-out infinite;
+        }
+
+        .opacity-3 {
+          opacity: 0.03;
         }
       `}</style>
     </footer>

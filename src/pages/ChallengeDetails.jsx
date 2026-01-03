@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import challengeService from '../services/challengeService';
 import userChallengeService from '../services/userChallengeService';
-import userService from '../services/userService'; // ✅ Add this import
+import userService from '../services/userService';
 import ShareButtons from '../components/common/ShareButtons';
 import { generateShareText } from '../utils/socialShare';
 import toast from 'react-hot-toast';
@@ -12,6 +13,7 @@ import { FaUsers, FaClock, FaTrophy, FaCalendarAlt, FaCheckCircle, FaEdit, FaTra
 const ChallengeDetails = () => {
   const { id } = useParams();
   const { currentUser } = useAuth();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const [challenge, setChallenge] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,11 +65,10 @@ const ChallengeDetails = () => {
     }
   };
 
-  // ✅ FIXED: Simplified admin check using userService
   const checkAdminStatus = async () => {
     try {
       const response = await userService.getUserProfile();
-      console.log('User profile data:', response.data); // Debug log
+      console.log('User profile data:', response.data);
       setIsAdmin(response.data?.role === 'admin');
     } catch (error) {
       console.error('Error checking admin status:', error);
@@ -165,16 +166,16 @@ const ChallengeDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'} flex items-center justify-center`}>
+        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${isDark ? 'border-green-400' : 'border-green-600'}`}></div>
       </div>
     );
   }
 
   if (!challenge) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Challenge not found</p>
+      <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'} flex items-center justify-center`}>
+        <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Challenge not found</p>
       </div>
     );
   }
@@ -183,34 +184,34 @@ const ChallengeDetails = () => {
   const shareText = generateShareText.challenge(challenge.title);
 
   const difficultyColors = {
-    Easy: 'bg-green-100 text-green-800',
-    Medium: 'bg-yellow-100 text-yellow-800',
-    Hard: 'bg-red-100 text-red-800'
+    Easy: isDark ? 'bg-green-900/30 text-green-300 border border-green-700' : 'bg-green-100 text-green-800',
+    Medium: isDark ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-700' : 'bg-yellow-100 text-yellow-800',
+    Hard: isDark ? 'bg-red-900/30 text-red-300 border border-red-700' : 'bg-red-100 text-red-800'
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'} py-8`}>
       <div className="max-w-4xl mx-auto px-6">
         {/* Back Button */}
         <button
           onClick={() => navigate('/challenges')}
-          className="mb-6 text-green-600 hover:text-green-700 font-semibold flex items-center gap-2"
+          className={`mb-6 ${isDark ? 'text-green-400 hover:text-green-300' : 'text-green-600 hover:text-green-700'} font-semibold flex items-center gap-2`}
         >
           ← Back to Challenges
         </button>
 
-        {/* ✅ Admin Controls - Now visible */}
+        {/* Admin Controls */}
         {isAdmin && !isEditing && (
-          <div className="mb-6 flex gap-3 bg-blue-50 border border-blue-200 p-4 rounded-lg">
+          <div className={`mb-6 flex gap-3 ${isDark ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-200'} border p-4 rounded-lg`}>
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+              className={`flex items-center gap-2 ${isDark ? 'bg-blue-700 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white px-4 py-2 rounded-lg font-semibold transition`}
             >
               <FaEdit /> Edit Challenge
             </button>
             <button
               onClick={handleDelete}
-              className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+              className={`flex items-center gap-2 ${isDark ? 'bg-red-700 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'} text-white px-4 py-2 rounded-lg font-semibold transition`}
             >
               <FaTrash /> Delete Challenge
             </button>
@@ -219,41 +220,41 @@ const ChallengeDetails = () => {
 
         {/* Edit Form */}
         {isEditing ? (
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Edit Challenge</h2>
+          <div className={`${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'} rounded-lg shadow-lg p-8 mb-6`}>
+            <h2 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'} mb-6`}>Edit Challenge</h2>
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Title</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows="4"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Category</label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                     required
                   >
                     <option value="Zero Waste">Zero Waste</option>
@@ -265,12 +266,12 @@ const ChallengeDetails = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+                  <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Difficulty</label>
                   <select
                     name="difficulty"
                     value={formData.difficulty}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                     required
                   >
                     <option value="Easy">Easy</option>
@@ -282,50 +283,50 @@ const ChallengeDetails = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Duration (days)</label>
+                  <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Duration (days)</label>
                   <input
                     type="number"
                     name="duration"
                     value={formData.duration}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
+                  <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Points</label>
                   <input
                     type="number"
                     name="points"
                     value={formData.points}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Target (optional)</label>
+                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Target (optional)</label>
                 <input
                   type="text"
                   name="target"
                   value={formData.target}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                   placeholder="e.g., Reduce plastic waste by 50%"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Image URL</label>
                 <input
                   type="url"
                   name="imageUrl"
                   value={formData.imageUrl}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                   required
                 />
               </div>
@@ -333,14 +334,14 @@ const ChallengeDetails = () => {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                  className={`flex-1 ${isDark ? 'bg-green-700 hover:bg-green-600' : 'bg-green-600 hover:bg-green-700'} text-white py-3 rounded-lg font-semibold transition`}
                 >
                   Save Changes
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 bg-gray-500 text-white py-3 rounded-lg font-semibold hover:bg-gray-600 transition"
+                  className={`flex-1 ${isDark ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-500 hover:bg-gray-600'} text-white py-3 rounded-lg font-semibold transition`}
                 >
                   Cancel
                 </button>
@@ -362,42 +363,42 @@ const ChallengeDetails = () => {
             </div>
 
             {/* Challenge Info */}
-            <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className={`${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'} rounded-lg shadow-lg p-8`}>
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                  <span className={`inline-block ${isDark ? 'bg-green-900/30 text-green-300 border border-green-700' : 'bg-green-100 text-green-800'} px-3 py-1 rounded-full text-sm font-semibold`}>
                     {challenge.category}
                   </span>
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold ${difficultyColors[challenge.difficulty]}`}>
                     {challenge.difficulty}
                   </span>
                   {challenge.status && (
-                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">
+                    <span className={`px-3 py-1 ${isDark ? 'bg-purple-900/30 text-purple-300 border border-purple-700' : 'bg-purple-100 text-purple-800'} rounded-full text-sm font-semibold`}>
                       {challenge.status}
                     </span>
                   )}
                 </div>
                 
-                <h1 className="text-4xl font-bold text-gray-800 mb-4">
+                <h1 className={`text-4xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'} mb-4`}>
                   {challenge.title}
                 </h1>
                 
-                <p className="text-gray-600 text-lg mb-4">
+                <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-lg mb-4`}>
                   {challenge.description}
                 </p>
 
                 {challenge.target && (
-                  <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
-                    <p className="text-sm text-gray-700">
-                      <strong className="text-green-700">Target:</strong> {challenge.target}
+                  <div className={`${isDark ? 'bg-green-900/20 border-green-700' : 'bg-green-50 border-green-500'} border-l-4 p-4 mb-4`}>
+                    <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <strong className={`${isDark ? 'text-green-400' : 'text-green-700'}`}>Target:</strong> {challenge.target}
                     </p>
                   </div>
                 )}
               </div>
 
               {/* Share Section */}
-              <div className="mb-6 pb-6 border-b">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              <div className={`mb-6 pb-6 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                <h3 className={`text-lg font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'} mb-3`}>
                   Share This Challenge
                 </h3>
                 <ShareButtons
@@ -409,57 +410,57 @@ const ChallengeDetails = () => {
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-blue-50 p-4 rounded-lg text-center">
-                  <FaUsers className="text-2xl text-blue-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-800">{challenge.participants || 0}</div>
-                  <div className="text-sm text-gray-600">Participants</div>
+                <div className={`${isDark ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50'} p-4 rounded-lg text-center`}>
+                  <FaUsers className={`text-2xl ${isDark ? 'text-blue-400' : 'text-blue-600'} mx-auto mb-2`} />
+                  <div className={`text-2xl font-bold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{challenge.participants || 0}</div>
+                  <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Participants</div>
                 </div>
-                <div className="bg-green-50 p-4 rounded-lg text-center">
-                  <FaClock className="text-2xl text-green-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-800">{challenge.duration}</div>
-                  <div className="text-sm text-gray-600">Days</div>
+                <div className={`${isDark ? 'bg-green-900/20 border border-green-800' : 'bg-green-50'} p-4 rounded-lg text-center`}>
+                  <FaClock className={`text-2xl ${isDark ? 'text-green-400' : 'text-green-600'} mx-auto mb-2`} />
+                  <div className={`text-2xl font-bold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{challenge.duration}</div>
+                  <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Days</div>
                 </div>
-                <div className="bg-yellow-50 p-4 rounded-lg text-center">
-                  <FaTrophy className="text-2xl text-yellow-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-800">{challenge.points || 100}</div>
-                  <div className="text-sm text-gray-600">Points</div>
+                <div className={`${isDark ? 'bg-yellow-900/20 border border-yellow-800' : 'bg-yellow-50'} p-4 rounded-lg text-center`}>
+                  <FaTrophy className={`text-2xl ${isDark ? 'text-yellow-400' : 'text-yellow-600'} mx-auto mb-2`} />
+                  <div className={`text-2xl font-bold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{challenge.points || 100}</div>
+                  <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Points</div>
                 </div>
-                <div className="bg-purple-50 p-4 rounded-lg text-center">
-                  <FaCalendarAlt className="text-2xl text-purple-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-800">{challenge.difficulty}</div>
-                  <div className="text-sm text-gray-600">Level</div>
+                <div className={`${isDark ? 'bg-purple-900/20 border border-purple-800' : 'bg-purple-50'} p-4 rounded-lg text-center`}>
+                  <FaCalendarAlt className={`text-2xl ${isDark ? 'text-purple-400' : 'text-purple-600'} mx-auto mb-2`} />
+                  <div className={`text-2xl font-bold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{challenge.difficulty}</div>
+                  <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Level</div>
                 </div>
               </div>
 
               {/* Join Button */}
-              <div className="border-t pt-6">
+              <div className={`border-t ${isDark ? 'border-gray-700' : 'border-gray-200'} pt-6`}>
                 {!currentUser ? (
                   <div className="text-center">
-                    <p className="text-gray-600 mb-4">Please login to join this challenge</p>
+                    <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} mb-4`}>Please login to join this challenge</p>
                     <button
                       onClick={() => navigate('/login')}
-                      className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                      className={`${isDark ? 'bg-green-700 hover:bg-green-600' : 'bg-green-600 hover:bg-green-700'} text-white px-8 py-3 rounded-lg font-semibold transition`}
                     >
                       Login to Join
                     </button>
                   </div>
                 ) : checkingJoinStatus ? (
                   <div className="text-center py-4">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                    <div className={`inline-block animate-spin rounded-full h-8 w-8 border-b-2 ${isDark ? 'border-green-400' : 'border-green-600'}`}></div>
                   </div>
                 ) : alreadyJoined ? (
                   <div className="text-center">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                      <FaCheckCircle className="text-4xl text-green-600 mx-auto mb-3" />
-                      <p className="text-lg font-semibold text-green-800 mb-2">
+                    <div className={`${isDark ? 'bg-green-900/20 border-green-700' : 'bg-green-50 border-green-200'} border rounded-lg p-6`}>
+                      <FaCheckCircle className={`text-4xl ${isDark ? 'text-green-400' : 'text-green-600'} mx-auto mb-3`} />
+                      <p className={`text-lg font-semibold ${isDark ? 'text-green-300' : 'text-green-800'} mb-2`}>
                         You've already joined this challenge!
                       </p>
-                      <p className="text-gray-600 mb-4">
+                      <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
                         Continue tracking your progress in My Activities
                       </p>
                       <button
                         onClick={() => navigate('/my-activities')}
-                        className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                        className={`${isDark ? 'bg-green-700 hover:bg-green-600' : 'bg-green-600 hover:bg-green-700'} text-white px-6 py-3 rounded-lg font-semibold transition`}
                       >
                         View My Activities
                       </button>
@@ -471,10 +472,10 @@ const ChallengeDetails = () => {
                     disabled={joining || challenge.status === 'Completed'}
                     className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
                       challenge.status === 'Completed'
-                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                        ? isDark ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                         : joining
-                        ? 'bg-green-400 text-white cursor-wait'
-                        : 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
+                        ? isDark ? 'bg-green-500 text-white cursor-wait' : 'bg-green-400 text-white cursor-wait'
+                        : isDark ? 'bg-green-700 hover:bg-green-600 text-white shadow-lg hover:shadow-xl' : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
                     }`}
                   >
                     {joining ? (

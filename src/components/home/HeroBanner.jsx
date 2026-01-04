@@ -90,7 +90,7 @@ const HeroBanner = () => {
   }
 
   return (
-    <div ref={heroRef} className="relative h-[450px] md:h-[500px] overflow-hidden">
+    <div ref={heroRef} className="relative h-[60vh] md:h-[70vh] min-h-[450px] max-h-[800px] overflow-hidden">
       {/* Slides */}
       {challenges.map((challenge, index) => (
         <div
@@ -184,12 +184,14 @@ const HeroBanner = () => {
           <button
             onClick={prevSlide}
             className="absolute left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white/20 backdrop-blur-md hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 group"
+            aria-label="Previous slide"
           >
             <FaChevronLeft className="text-xl group-hover:-translate-x-1 transition-transform" />
           </button>
           <button
             onClick={nextSlide}
             className="absolute right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white/20 backdrop-blur-md hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 group"
+            aria-label="Next slide"
           >
             <FaChevronRight className="text-xl group-hover:translate-x-1 transition-transform" />
           </button>
@@ -233,6 +235,7 @@ const HeroBanner = () => {
                   key={challenge._id}
                   onClick={() => goToSlide(index)}
                   className="group relative w-24 h-24 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 border-2 border-white/30 hover:border-white"
+                  aria-label={`Go to ${challenge.title}`}
                 >
                   {/* Card Image */}
                   {challenge.imageUrl ? (
@@ -272,6 +275,33 @@ const HeroBanner = () => {
         </div>
       )}
 
+      {/* Scroll Indicator - Visual Hint to Next Section */}
+      <div className="absolute bottom-20 md:bottom-16 left-1/2 -translate-x-1/2 z-30 animate-bounce">
+        <button
+          onClick={() => {
+            const nextSection = heroRef.current?.nextElementSibling;
+            if (nextSection) {
+              nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }}
+          className="flex flex-col items-center gap-2 text-white/80 hover:text-white transition-colors group cursor-pointer"
+          aria-label="Scroll to next section"
+        >
+          <span className="text-sm font-medium tracking-wide uppercase hidden md:block">Scroll Down</span>
+          <div className="w-6 h-10 border-2 border-white/60 rounded-full flex items-start justify-center p-2 group-hover:border-white transition-colors">
+            <div className="w-1.5 h-3 bg-white/80 rounded-full animate-scroll-down"></div>
+          </div>
+          <svg 
+            className="w-6 h-6 group-hover:translate-y-1 transition-transform" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </button>
+      </div>
+
       <style>{`
         @keyframes fadeInUp {
           from {
@@ -284,8 +314,26 @@ const HeroBanner = () => {
           }
         }
 
+        @keyframes scrollDown {
+          0% {
+            opacity: 0;
+            transform: translateY(0);
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+        }
+
         .animate-fadeInUp {
           animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-scroll-down {
+          animation: scrollDown 1.5s ease-in-out infinite;
         }
 
         .animation-delay-200 {

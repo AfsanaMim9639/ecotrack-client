@@ -17,6 +17,9 @@ import About from '../pages/About';
 import Contact from '../pages/Contact';
 import Help from '../pages/Help';
 import PrivacyTerms from '../pages/PrivacyTerms';
+import Impact from '../pages/Impact';
+import Community from '../pages/Community';
+import Resources from '../pages/Resources';
 
 const AppRoutes = () => {
   return (
@@ -30,10 +33,14 @@ const AppRoutes = () => {
       <Route path="/challenges/:id" element={<ChallengeDetails />} />
       <Route path="/leaderboard" element={<Leaderboard />} /> {/* ✅ NEW */}
       <Route path="/profile" element={<Profile />} />
+      <Route path="/impact" element={<Impact />} />
+      <Route path="/community" element={<Community />} />
+      <Route path="/resources" element={<Resources />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/help" element={<Help />} />
       <Route path="/privacy" element={<PrivacyTerms />} />
+      
       {/* Protected Routes */}
       <Route
         path="/challenges/add"
